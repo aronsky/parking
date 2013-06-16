@@ -1,0 +1,38 @@
+application: c4-parking
+version: 1
+runtime: python27
+api_version: 1
+threadsafe: yes
+
+handlers:
+- url: /favicon\.ico
+  static_files: favicon.ico
+  upload: favicon\.ico
+
+- url: /scripts/main\.js
+  static_files: scripts/main.js
+  upload: scripts/main.js
+
+- url: /css
+  static_dir: css
+
+- url: /js
+  static_dir: js
+
+- url: /tasks/clear
+  script: utils.app
+  login: admin
+
+- url: /tasks/init
+  script: utils.app
+  login: admin
+
+- url: .*
+  script: main.app
+  login: required
+
+libraries:
+- name: webapp2
+  version: "2.5.1"
+- name: jinja2
+  version: latest

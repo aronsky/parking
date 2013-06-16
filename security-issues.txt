@@ -1,0 +1,3 @@
+Open the app when there are spots available, choose a spot later on.
+Delete cars belonging to others by plate number.
+Park in the name of others/Leave in the name of others.

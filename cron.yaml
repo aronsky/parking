@@ -1,0 +1,4 @@
+cron:
+- description: clear parking spots
+  url: /tasks/clear
+  schedule: every day 00:00
