@@ -1,0 +1,91 @@
+<!--
+    Parameters:
+    
+    logout_url: string, URL for logging out
+    user: User object, representing the current user
+    reservablepots: int, number of free spots
+    usercars: list of cars belonging to current user
+-->
+
+{% if useradmin %}
+<!-- Start of third page: #future -->
+<div data-role="page" id="future">
+
+	<div data-role="header" data-position="fixed" data-tap-toggle="false" data-theme="b">
+        <a href="#main" class="ui-btn-left"><i class="icon-angle-left"></i></a>
+        <h1>Future parking</h1>
+	</div><!-- /header -->
+
+	<div data-theme="b" data-role="content">
+		<h2>Future spots ({{ reservablepots }} free)</h2>
+		
+        <div class="content-primary">
+            <div class="inset"><!--nativeDroid workaround-->
+                <ul data-role="listview" data-inset="true" id="futurespotlist">
+                    <!-- Content is dynamically generated... -->
+                </ul>
+            </div>
+		</div><!--/content-primary -->
+        
+        <form>
+            <input id="reservespotnumber" type="hidden"></input>
+            <input id="unreservespotnumber" type="hidden"></input>
+        </form>
+        
+        <!-- Start of popup: #confirmunreserve -->
+        <div data-role="popup" id="confirmunreserve">
+
+            <div data-role="header" data-theme="b" style="padding-top: 5px;">
+                <h1>Unreserve</h1>
+            </div><!-- /header -->
+
+            <div data-role="content" data-theme="b">	
+                <h2>Are you sure you'd like to forfeit the reservation?</h2>
+                <div class="inset"><!--nativeDroid workaround-->
+                    <ul data-role="listview" data-inset="true">
+                        <li><a href="#future" onclick="unreserve_spot();">Unreserve</a></li>
+                        <li><a href="#future">Keep</a></li>
+                    </ul>
+                </div>
+            </div><!-- /content -->
+            
+            <div data-role="footer">
+                <h4>&nbsp;</h4>
+            </div><!-- /footer -->
+        </div><!-- /popup confirmunreserve -->
+
+        <!-- Start of popup: #confirmreserve -->
+        <div data-role="popup" id="confirmreserve">
+
+            <div data-role="header" data-theme="b" style="padding-top: 5px;">
+                <h1>Reservation</h1>
+            </div><!-- /header -->
+
+            <div data-role="content" data-theme="b">
+                <h2>What car are you driving?</h2>
+                <div class="inset"><!--nativeDroid workaround-->
+                    <ul data-role="listview" data-inset="true">
+                        <li><a href="#future" onclick="reserve_spot();">Guest Car</a></li>
+                    </ul>
+                </div>
+            </div><!-- /content -->
+            
+            <div data-role="footer">
+                <h4>&nbsp;</h4>
+            </div><!-- /footer -->
+        </div><!-- /popup confirmreserve -->
+
+
+	</div><!-- /content -->
+	
+    <div data-position="fixed" data-tap-toggle="false" data-role="footer" data-tap-toggle="false" data-theme='b'>
+        <div data-role="navbar">
+            <ul>
+                <li><a href="#options" data-icon="cogs">Options</a></li>
+                <li><a href="{{ logout_url }}" data-icon="signout">Logout</a></li>
+            </ul>
+        </div>
+    </div><!-- /footer -->
+
+</div><!-- /page main -->
+{% endif %}

@@ -11,12 +11,11 @@
 	color: #FFFFFF;
 }
 
-
 .ui-bar-b.ui-header {
 
 }
 
-.ui-header.ui-bar-b {
+.ui-header.ui-bar-b,.ui-footer.ui-bar-b {
 	background-color: #000000;
 }
 
@@ -243,6 +242,20 @@ code,pre {
 
 .nativeDroidCards > li[data-cards-type="weather"] .week li {
 	border-right: 1px solid rgba(255,255,255,0.05);
+}
+
+
+.ui-footer.ui-bar-b {
+	border-bottom: 0px solid rgba(255,255,255,0.1);
+	border-top: 1px solid rgba(255,255,255,0.3);
+}
+
+.ui-footer .ui-block-a,.ui-footer .ui-block-b,.ui-footer .ui-block-c,.ui-footer .ui-block-d,.ui-footer .ui-block-e {
+	border-right: 1px solid rgba(255,255,255,0.2);
+}
+
+.ui-footer .ui-block-a,.ui-footer .ui-block-b,.ui-footer .ui-block-c,.ui-footer .ui-block-d,.ui-footer .ui-block-e {
+	border-right: 1px solid rgba(255,255,255,0.2);
 }
 
 @media all and (min-width: 768px){

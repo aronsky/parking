@@ -22,8 +22,7 @@ class Clear(webapp2.RequestHandler):
     def get(self):
         for spot in Spot.all():
             spot.Release()
-            spot.put()
-
+        
 class Init(webapp2.RequestHandler):
     def get(self):
         for spot in Spot.all():
@@ -31,7 +30,7 @@ class Init(webapp2.RequestHandler):
         for car in Car.all():
             car.delete()
         for i in xrange(shared.SPOTS_COUNT):
-            spot = Spot.get_or_insert(str(i+1), number=i+1, free=True, car=None, comments='')
+            spot = Spot.get_or_insert(str(i+1), number=i+1, free=True, reserved=False, car=None, comments='')
             spot.put()
 
 app = webapp2.WSGIApplication([('/tasks/clear', Clear),

@@ -3,6 +3,7 @@
 #############
 
 SPOTS_COUNT = 5
+GUEST_PLATE = 9999999
 
 ##############
 # Exceptions #

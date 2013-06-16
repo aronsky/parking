@@ -1,0 +1,87 @@
+<!--
+    Parameters:
+    
+    logout_url: string, URL for logging out
+    usercars: list of cars belonging to current user
+-->
+
+<!-- Start of second page: #options -->
+<div data-role="page" id="options">
+
+	<div data-role="header" data-position="fixed" data-tap-toggle="false" data-theme="b">
+        <a href="#main" class="ui-btn-left"><i class="icon-angle-left"></i></a>
+		<h1>Options</h1>
+	</div><!-- /header -->
+
+	<div data-theme="b" data-role="content">
+		<h2>Car List</h2>
+		
+        <div class="inset"><!--nativeDroid workaroud-->
+            <ul data-role="listview" data-inset="true" id="carlist">
+            {% for car in usercars %}
+                <li>
+                    <a href="#addcar" data-rel="popup" data-transition="pop" onclick="fill('{{ car.prettyplate() }}','{{ car.make }}','{{ car.model }}','{{ car.color }}')">
+                        <h3>{{ car.make }} {{ car.model }} // {{ car.color.title() }}</h3>
+                        <p><strong>{{ car.prettyplate() }}</strong></p>
+                    </a>
+                </li>
+            {% endfor %}
+            </ul>
+        </div>
+        
+        <!-- Start of popup: #addcar -->
+        <div data-role="popup" id="addcar" data-theme="b">
+
+            <div data-role="header" data-theme="b"  style="padding-top: 5px;">
+                <h1>Car details</h1>
+            </div><!-- /header -->
+
+            <div data-role="content" data-theme="b">
+                <form>
+                    <div data-role="fieldcontain" class="ui-field-contain ui-body ui-br">
+                        <label for="plate" class="ui-input-text">Plate:</label>
+                        <input type="text" name="plate" id="plate" value="" class="ui-input-text ui-body-c ui-corner-all ui-shadow-inset">
+                    </div>
+                    <div data-role="fieldcontain" class="ui-field-contain ui-body ui-br">
+                        <label for="make" class="ui-input-text">Make:</label>
+                        <input type="text" name="make" id="make" value="" class="ui-input-text ui-body-c ui-corner-all ui-shadow-inset">
+                    </div>
+                    <div data-role="fieldcontain" class="ui-field-contain ui-body ui-br">
+                        <label for="model" class="ui-input-text">Model:</label>
+                        <input type="text" name="model" id="model" value="" class="ui-input-text ui-body-c ui-corner-all ui-shadow-inset">
+                    </div>
+                    <div data-role="fieldcontain" class="ui-field-contain ui-body ui-br">
+                        <label for="color" class="ui-input-text">Color:</label>
+                        <select name="color" id="color" data-native-menu="true">
+                            <option value="white">White</option>
+                            <option value="blue">Blue</option>
+                            <option value="green">Green</option>
+                            <option value="black">Black</option>
+                            <option value="red">Red</option>
+                            <option value="grey">Grey</option>
+                            <option value="silver">Silver</option>
+                            <option value="brown">Brown</option>
+                            <option value="yellow">Yellow</option>
+                            <option value="orange">Orange</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                </form>
+                
+                <div class="showastabs center nobg">
+                    <a href="#" data-inline="true" data-role="button" data-icon="delete" onclick="delete_car();">Delete</a>
+                    <a href="#" data-inline="true" data-role="button" data-icon="check" onclick="save_car();">Save</a>
+                </div><!-- /footer -->
+            </div><!-- /content -->
+            
+            
+        </div><!-- /popup addcar -->
+
+        
+        <p><a href="#addcar" data-role="button" data-rel="popup" data-transition="pop" onclick="fill('','','','White')">Add a new car...</a></p>
+	</div><!-- /content -->
+	
+	<div data-role="footer">
+		<h4>&nbsp;</h4>
+	</div><!-- /footer -->
+</div><!-- /page two -->

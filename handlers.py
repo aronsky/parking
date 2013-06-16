@@ -23,11 +23,22 @@ class MainHandler(webapp2.RequestHandler):
             "logout_url": logout_url,
             "user": user,
             "usercars": usercars,
+            "useradmin": users.is_current_user_admin(),
             "freespots": len([spot for spot in spots if spot.free]),
+            "reservablespots": len([spot for spot in spots if not spot.reserved]),
             }
 
-        template = jinja_environment.get_template('templates/index.tpl')
-        self.response.out.write(template.render(template_values))
+        main = jinja_environment.get_template('templates/html/subpages/main.html')
+        options = jinja_environment.get_template('templates/html/subpages/options.html')
+        future = jinja_environment.get_template('templates/html/subpages/future.html')
+        index = jinja_environment.get_template('templates/html/index.html')
+        self.response.out.write(index.render(
+            {
+                'mainpage': main.render(template_values),
+                'optionspage': options.render(template_values),
+                'futurepage': future.render(template_values),
+            }
+            ))
 
 class SetCarHandler(webapp2.RequestHandler):
     def get(self):
@@ -74,7 +85,6 @@ class GetSpotsHandler(webapp2.RequestHandler):
             user = users.get_current_user()
             user.name = make_name(user)
             user.inside = False
-            # usercars = list(Car.all().filter("owner = ", user))
             
             spots = Spot.all()
             jsonspots = []
@@ -109,6 +119,30 @@ class GetSpotsHandler(webapp2.RequestHandler):
                       }
         self.response.out.write(json.dumps(result))
 
+class GetFutureSpotsHandler(webapp2.RequestHandler):
+    def get(self):
+        try:
+            spots = Spot.all()
+            jsonspots = []
+            
+            for spot in spots:
+                jspot = {}
+                jspot['number'] = spot.number
+                jspot['reserved'] = spot.reserved
+                jspot['comments'] = ''
+                jsonspots += [jspot]
+                
+            result = {}
+            
+            result['spots'] = jsonspots
+            result['result'] = 'success'
+        except Exception, e:
+            result = {"result": "error",
+                      "reason": `e`,
+                      "args"  : self.request.arguments()
+                      }
+        self.response.out.write(json.dumps(result))
+        
 class TakeSpotHandler(webapp2.RequestHandler):
     def get(self):
         try:
@@ -116,13 +150,7 @@ class TakeSpotHandler(webapp2.RequestHandler):
             
             spot = Spot.get(db.Key.from_path("Spot", self.request.get('spotnumber')))
             car = Car.get(db.Key.from_path("Car", self.request.get('plate').replace('-','')))
-            
-            if spot.free:
-                spot.free = False
-                spot.car = car
-                spot.put()
-            else:
-                raise SpotTakenException()
+            spot.Take(car)
             
             result['result'] = 'success'
         except Exception, e:
@@ -138,13 +166,23 @@ class LeaveSpotHandler(webapp2.RequestHandler):
             result = {}
             
             spot = Spot.get(db.Key.from_path("Spot", self.request.get('spotnumber')))
+            spot.Leave()
             
-            if not spot.free:
-                spot.free = True
-                spot.car = None
-                spot.put()
-            else:
-                raise SpotNotTakenException()
+            result['result'] = 'success'
+        except Exception, e:
+            result = {"result": "error",
+                      "reason": `e`,
+                      "args"  : self.request.arguments()
+                      }
+        self.response.out.write(json.dumps(result))
+
+class ReserveSpotHandler(webapp2.RequestHandler):
+    def get(self):
+        try:
+            result = {}
+            
+            spot = Spot.get(db.Key.from_path("Spot", self.request.get('spotnumber')))
+            spot.Reserve(bool(int(self.request.get('reserve'))))
             
             result['result'] = 'success'
         except Exception, e:

@@ -115,7 +115,7 @@ function update_spots()
                     var item = "";
                     if (this.free) {
                         if (this.parkable) {
-                            item = '<li><a href="#confirmreserve" data-rel="popup" data-transition="pop" onclick="$(\'input#takespotnumber\').val('+this.number+')">Empty</a></li>';
+                            item = '<li><a href="#confirmtake" data-rel="popup" data-transition="pop" onclick="$(\'input#takespotnumber\').val('+this.number+')">Empty</a></li>';
                         }
                         else {
                             item = "<li>Empty</li>";
@@ -140,6 +140,50 @@ function update_spots()
             alert("Unexpected error has occured!");
             $.mobile.hidePageLoadingMsg();
             $.mobile.changePage('#main');
+        }
+    });
+}
+
+function update_future_spots()
+{
+    sl = $('ul#futurespotlist');
+    sl.children().empty(); // Clear the list
+    listhtml = "";
+    
+    $.mobile.showPageLoadingMsg();
+    
+    $.ajax({
+        url: '/getfuturespots',
+        dataType: 'json',
+        success: function(data) {
+            $.mobile.hidePageLoadingMsg();
+            if (data["result"] == "error")
+            {
+                alert(data["reason"]);
+                alert(data["args"]);
+                $.mobile.changePage('#future');
+            }
+            else
+            {
+                $.each(data["spots"], function () {
+                    var item = "";
+                    if (!this.reserved) {
+                        item = '<li><a href="#confirmreserve" data-rel="popup" data-transition="pop" onclick="$(\'input#reservespotnumber\').val('+this.number+')">Empty</a></li>';
+                    }
+                    else {
+                        item = '<li><a href="#confirmunreserve" data-rel="popup" data-transition="pop" onclick="$(\'input#unreservespotnumber\').val('+this.number+')"><h3>Guest</h3><p><strong>Reserved</strong></p><p class="ui-li-aside"><strong>' + this.comments + '</strong></p></a></li>';
+                    }
+                    
+                    listhtml += item;
+                })
+                sl.html(listhtml);
+                sl.listview("refresh");
+            }
+        },
+        error: function(data) {
+            alert("Unexpected error has occured!");
+            $.mobile.hidePageLoadingMsg();
+            $.mobile.changePage('#future');
         }
     });
 }
@@ -214,6 +258,80 @@ function leave_spot(plate)
         });
 }
 
-$(document).bind('pageinit', function (event, data) {
+function reserve_spot()
+{
+    $("body").addClass("ui-disabled");
+    $.mobile.showPageLoadingMsg();
+    
+    $.ajax({
+        url: '/reservespot?reserve=1&spotnumber=' + $('input#reservespotnumber').val(),
+        dataType: 'json',
+        success: function(data) {
+            if (data["result"] == "error")
+            {
+                alert(data["reason"]);
+                alert(data["args"]);
+                $.mobile.hidePageLoadingMsg();
+                $("body").removeClass("ui-disabled");
+                $.mobile.changePage('#future');
+            }
+            else
+            {
+                setTimeout(function()
+                    {
+                        document.location = document.location.protocol + "//" + document.location.host + document.location.pathname + "#future";
+                        document.location.reload(true);
+                    }, 500);
+            }
+        },
+        error: function(data) {
+            alert("Unexpected error has occured!");
+            $.mobile.hidePageLoadingMsg();
+            $("body").removeClass("ui-disabled");
+            $.mobile.changePage('#future');
+        }
+        });
+}
+
+function unreserve_spot()
+{
+    $("body").addClass("ui-disabled");
+    $.mobile.showPageLoadingMsg();
+    
+    $.ajax({
+        url: '/reservespot?reserve=0&spotnumber=' + $('input#unreservespotnumber').val(),
+        dataType: 'json',
+        success: function(data) {
+            if (data["result"] == "error")
+            {
+                alert(data["reason"]);
+                alert(data["args"]);
+                $.mobile.hidePageLoadingMsg();
+                $("body").removeClass("ui-disabled");
+                $.mobile.changePage('#future');
+            }
+            else
+            {
+                setTimeout(function()
+                    {
+                        document.location = document.location.protocol + "//" + document.location.host + document.location.pathname + "#future";
+                        document.location.reload(true);
+                    }, 500);
+            }
+        },
+        error: function(data) {
+            alert("Unexpected error has occured!");
+            $.mobile.hidePageLoadingMsg();
+            $("body").removeClass("ui-disabled");
+            $.mobile.changePage('#future');
+        }
+        });
+}
+
+$('#future').on('pageshow', function (event) {
+    update_future_spots();
+});
+
+$('#main').on('pageshow', function (event) {
     update_spots();
 });

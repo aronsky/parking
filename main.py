@@ -22,7 +22,9 @@ app = webapp2.WSGIApplication([
                               ('/user/setcar', SetCarHandler),
                               ('/user/delcar', DeleteCarHandler),
                               ('/getspots', GetSpotsHandler),
+                              ('/getfuturespots', GetFutureSpotsHandler),
                               ('/takespot', TakeSpotHandler),
                               ('/leavespot', LeaveSpotHandler),
+                              ('/reservespot', ReserveSpotHandler),
                               ('/', MainHandler)],
                               debug=True)
