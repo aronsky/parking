@@ -6,7 +6,7 @@ class Car(db.Model):
     plate = db.IntegerProperty(required=True)
     make = db.StringProperty(required=True)
     model = db.StringProperty(required=True)
-    color = db.StringProperty(required=True, choices=set(["red","green","blue","white","turquoise","black","silver","brown","yellow","orange","other"]))
+    color = db.StringProperty(required=True, choices=set(["red","green","blue","white","turquoise","gray","black","silver","brown","yellow","orange","other"]))
     owner = db.UserProperty(required=True, auto_current_user_add=True)
     
     @staticmethod

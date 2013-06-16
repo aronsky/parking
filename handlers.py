@@ -16,6 +16,8 @@ class MainHandler(webapp2.RequestHandler):
         user.name = make_name(user)
         user.inside = False
         usercars = list(Car.all().filter("owner = ", user).filter("plate != ", GUEST_PLATE))
+        if users.is_current_user_admin():
+            usercars += [Car.GuestCar()]
         
         spots = Spot.all()
         
@@ -110,7 +112,7 @@ class GetSpotsHandler(webapp2.RequestHandler):
                         jspot['label'] = spot.car.make + ' ' + spot.car.model
                 jsonspots += [jspot]
                 
-            if not user.inside:
+            if not user.inside or users.is_current_user_admin():
                 for jspot in jsonspots:
                     if jspot['free']:
                         jspot['parkable'] = True
