@@ -4,6 +4,7 @@
     logout_url: string, URL for logging out
     user: User object, representing the current user
     freespots: int, number of free spots
+    totalspots: int, spots count
     usercars: list of cars belonging to current user
 -->
 
@@ -16,7 +17,24 @@
 	</div><!-- /header -->
 
 	<div data-theme="b" data-role="content">
-		<h2>Current spots ({{ freespots }} free)</h2>
+        
+        {% if not freespots %}
+        <div class="message error">
+            <i class="icon-exclamation-sign"></i>
+            <p>No free spots left!</p>
+        </div>
+        {% elif freespots == 1 %}
+        <div class="message warning">
+            <i class="icon-warning-sign"></i>
+            <h2>Last spot!</h2>
+        </div>
+        {% else %}
+        <div class="inset">
+            <h2>Current spots ({{ freespots }} free)</h2>
+        </div>
+        {% endif %}
+
+        <progress value="{{ freespots }}" max="{{ totalspots }}"></progress>
 		
         <div class="content-primary">
             <div class="inset"><!--nativeDroid workaround-->

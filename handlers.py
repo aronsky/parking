@@ -18,7 +18,7 @@ class MainHandler(webapp2.RequestHandler):
         usercars = list(Car.all().filter("owner = ", user).filter("plate != ", GUEST_PLATE))
         usercars += [Car.GuestCar()]            
         
-        spots = Spot.all()
+        spots = list(Spot.all())
         
         template_values = {
             "logout_url": logout_url,
@@ -26,6 +26,7 @@ class MainHandler(webapp2.RequestHandler):
             "usercars": usercars,
             "useradmin": users.is_current_user_admin(),
             "freespots": len([spot for spot in spots if spot.free]),
+            "totalspots": len(spots),
             "reservablespots": len([spot for spot in spots if not spot.reserved]),
             }
 
