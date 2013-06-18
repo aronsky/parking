@@ -6,7 +6,7 @@ from datamodel import *
 from shared import *
 import json
 
-jinja_environment = jinja2.Environment(
+JINJA_ENV = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.dirname(__file__)))
 
 class MainHandler(webapp2.RequestHandler):
@@ -16,8 +16,7 @@ class MainHandler(webapp2.RequestHandler):
         user.name = make_name(user)
         user.inside = False
         usercars = list(Car.all().filter("owner = ", user).filter("plate != ", GUEST_PLATE))
-        if users.is_current_user_admin():
-            usercars += [Car.GuestCar()]
+        usercars += [Car.GuestCar()]            
         
         spots = Spot.all()
         
@@ -30,10 +29,10 @@ class MainHandler(webapp2.RequestHandler):
             "reservablespots": len([spot for spot in spots if not spot.reserved]),
             }
 
-        main = jinja_environment.get_template('templates/html/subpages/main.html')
-        options = jinja_environment.get_template('templates/html/subpages/options.html')
-        future = jinja_environment.get_template('templates/html/subpages/future.html')
-        index = jinja_environment.get_template('templates/html/index.html')
+        main = JINJA_ENV.get_template('templates/html/subpages/main.html')
+        options = JINJA_ENV.get_template('templates/html/subpages/options.html')
+        future = JINJA_ENV.get_template('templates/html/subpages/future.html')
+        index = JINJA_ENV.get_template('templates/html/index.html')
         self.response.out.write(index.render(
             {
                 'mainpage': main.render(template_values),
@@ -101,8 +100,7 @@ class GetSpotsHandler(webapp2.RequestHandler):
                         jspot['name'] = "Guest"
                         jspot['label'] = "Reserved"
                         jspot['plate'] = GUEST_PLATE
-                        if users.is_current_user_admin():
-                            jspot['leavable'] = True
+                        jspot['leavable'] = True
                     else:
                         if spot.car.owner == user:
                             user.inside = True
@@ -110,13 +108,10 @@ class GetSpotsHandler(webapp2.RequestHandler):
                         jspot['name'] = make_name(spot.car.owner)
                         jspot['plate'] = spot.car.plate
                         jspot['label'] = spot.car.make + ' ' + spot.car.model
+                else:
+                    jspot['parkable'] = True
                 jsonspots += [jspot]
                 
-            if not user.inside or users.is_current_user_admin():
-                for jspot in jsonspots:
-                    if jspot['free']:
-                        jspot['parkable'] = True
-            
             result = {}
             
             result['spots'] = jsonspots
