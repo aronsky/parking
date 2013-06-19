@@ -328,6 +328,38 @@ function unreserve_spot()
         });
 }
 
+function update_theme()
+{
+    $("body").addClass("ui-disabled");
+    $.mobile.showPageLoadingMsg();
+
+    $.ajax({
+        url: '/settheme?themename=nativedroid&subtheme=light&themecolor=' + $('select#theme-color').val(),
+        dataType: 'json',
+        success: function (data) {
+            if (data["result"] == "error") {
+                alert(data["reason"]);
+                alert(data["args"]);
+                $.mobile.hidePageLoadingMsg();
+                $("body").removeClass("ui-disabled");
+                $.mobile.changePage('#main');
+            }
+            else {
+                setTimeout(function () {
+                    document.location = document.location.protocol + "//" + document.location.host + document.location.pathname + "#options";
+                    document.location.reload(true);
+                }, 500);
+            }
+        },
+        error: function (data) {
+            alert("Unexpected error has occured!");
+            $.mobile.hidePageLoadingMsg();
+            $("body").removeClass("ui-disabled");
+            $.mobile.changePage('#options');
+        }
+    });
+}
+
 $('#future').on('pageshow', function (event) {
     update_future_spots();
 });

@@ -81,3 +81,29 @@ class Spot(db.Model):
             self.free = False
             self.reserved = False
             self.put()
+
+class Configuration(db.Model):
+    owner = db.UserProperty(required=True, auto_current_user_add=True)
+    themename = db.StringProperty(required=True, choices=set(["nativedroid"]), default="nativedroid")
+    subtheme = db.StringProperty(required=True, choices=set(["light", "dark"]), default="light")
+    themecolor = db.StringProperty(required=True, choices=set(["blue", "green", "purple", "red", "yellow"]), default="blue")
+
+    @staticmethod
+    def GetTheme():
+        try:
+            cfg = list(Configuration.all().filter("owner = ", users.get_current_user()))[0]
+        except:
+            cfg = Configuration()
+            cfg.put()
+        return cfg.themename, cfg.subtheme, cfg.themecolor
+
+    @staticmethod
+    def SetTheme(themename, subtheme, themecolor):
+        try:
+            cfg = list(Configuration.all().filter("owner = ", users.get_current_user()))[0]
+        except:
+            cfg = Configuration()
+        cfg.themename   = themename
+        cfg.subtheme    = subtheme
+        cfg.themecolor  = themecolor
+        cfg.put()

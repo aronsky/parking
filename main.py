@@ -26,5 +26,6 @@ app = webapp2.WSGIApplication([
                               ('/takespot', TakeSpotHandler),
                               ('/leavespot', LeaveSpotHandler),
                               ('/reservespot', ReserveSpotHandler),
+                              ('/settheme', SetThemeHandler),
                               ('/', MainHandler)],
                               debug=True)

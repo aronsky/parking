@@ -1,22 +1,21 @@
+{% extends "templates/html/subpages/basepage.html" %}
 <!--
     Parameters:
     
     logout_url: string, URL for logging out
-    user: User object, representing the current user
+    useradmin: Boolean, true if user is admin, false otherwise
     reservablespots: int, number of free spots
-    usercars: list of cars belonging to current user
 -->
 
 {% if useradmin %}
-<!-- Start of third page: #future -->
-<div data-role="page" id="future">
+{% block pageid %}future{% endblock %}
 
-	<div data-role="header" data-position="fixed" data-tap-toggle="false" data-theme="b">
+{% block header %}
         <a href="#main" class="ui-btn-left"><i class="icon-angle-left"></i></a>
         <h1>Future parking</h1>
-	</div><!-- /header -->
+{% endblock %}
 
-	<div data-theme="b" data-role="content">
+{% block content %}
 		<h2>Future spots ({{ reservablespots }} free)</h2>
 		
         <div class="content-primary">
@@ -76,16 +75,13 @@
         </div><!-- /popup confirmreserve -->
 
 
-	</div><!-- /content -->
-	
-    <div data-position="fixed" data-tap-toggle="false" data-role="footer" data-tap-toggle="false" data-theme='b'>
+{% endblock %}
+{% block footer %}
         <div data-role="navbar">
             <ul>
                 <li><a href="#options" data-icon="cogs">Options</a></li>
                 <li><a href="{{ logout_url }}" data-icon="signout">Logout</a></li>
             </ul>
         </div>
-    </div><!-- /footer -->
-
-</div><!-- /page main -->
+{% endblock %}
 {% endif %}

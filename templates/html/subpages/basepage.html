@@ -1,20 +1,20 @@
-{% extends "templates/html/subpages/basepage.html" %}
 <!--
     Parameters:
-    
-    logout_url: string, URL for logging out
-    user: User object, representing the current user
-    freespots: int, number of free spots
-    totalspots: int, spots count
-    usercars: list of cars belonging to current user
 -->
 
-{% block pageid %}main{% endblock %}
-{% block header %}
+<!-- Start of page -->
+<div data-role="page" id="{% block pageid %}main{% endblock %}">
+
+    <!-- header -->
+	<div data-role="header" data-position="fixed" data-tap-toggle="false" data-theme="b">
+        {% block header %}
         <h1>Welcome, {{ user.name }}!</h1>
-{% endblock %}
-{% block content %}
-        
+        {% endblock %}
+	</div><!-- /header -->
+
+    <!-- content -->
+	<div data-theme="b" data-role="content">
+        {% block content %}
         {% if not freespots %}
         <div class="message error">
             <i class="icon-exclamation-sign"></i>
@@ -90,8 +90,13 @@
                 <h4>&nbsp;</h4>
             </div><!-- /footer -->
         </div><!-- /popup confirmtake -->
-{% endblock %}
-{% block footer %}
+
+        {% endblock %}
+	</div><!-- /content -->
+	
+    <!-- footer -->
+    <div data-position="fixed" data-tap-toggle="false" data-role="footer" data-theme='b'>
+        {% block footer %}
         <div data-role="navbar">
             <ul>
                 <li><a href="#options" data-icon="cogs">Options</a></li>
@@ -101,4 +106,7 @@
                 <li><a href="{{ logout_url }}" data-icon="signout">Logout</a></li>
             </ul>
         </div>
-{% endblock %}
+        {% endblock %}
+    </div><!-- /footer -->
+
+</div><!-- /page -->

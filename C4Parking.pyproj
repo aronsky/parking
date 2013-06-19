@@ -38,6 +38,7 @@
   <ItemGroup>
     <Content Include="js\main.js" />
     <Content Include="templates\html\index.html" />
+    <Content Include="templates\html\subpages\basepage.html" />
     <Content Include="templates\html\subpages\future.html" />
     <Content Include="templates\html\subpages\main.html" />
     <Content Include="templates\html\subpages\options.html" />

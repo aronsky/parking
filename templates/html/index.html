@@ -1,6 +1,9 @@
 <!--
     Parameters:
     
+    themename: string, name of the global theme (nativedroid)
+    subtheme: string, name of subtheme (light or dark)
+    themecolor: string, color theme
     mainpage: Rendered HTML of the main page
     optionspage: Rendered HTML of the options page
     futurepate: Rendered HTML of the future page
@@ -16,9 +19,9 @@
     
     <link rel="stylesheet" href="/css/font-awesome.min.css"/>
     <link rel="stylesheet" href="/css/jquerymobile.css"/>
-    <link rel="stylesheet" href="/css/jquerymobile.nativedroid.css"/>
-    <link rel="stylesheet" href="/css/jquerymobile.nativedroid.light.css" id='jQMnDTheme' />
-    <link rel="stylesheet" href="/css/jquerymobile.nativedroid.color.blue.css" id='jQMnDColor' />
+    <link rel="stylesheet" href="/css/jquerymobile.{{ themename }}.css"/>
+    <link rel="stylesheet" href="/css/jquerymobile.{{ themename }}.{{ subtheme }}.css" id='jQMnDTheme' />
+    <link rel="stylesheet" href="/css/jquerymobile.{{ themename }}.color.{{ themecolor }}.css" id='jQMnDColor' />
     <!--
 	<link rel="stylesheet" href="http://code.jquery.com/mobile/1.3.1/jquery.mobile-1.3.1.min.css" />
     -->

@@ -15,32 +15,50 @@ class MainHandler(webapp2.RequestHandler):
         user = users.get_current_user()
         user.name = make_name(user)
         user.inside = False
-        usercars = list(Car.all().filter("owner = ", user).filter("plate != ", GUEST_PLATE))
-        usercars += [Car.GuestCar()]            
-        
+        editablecars = list(Car.all().filter("owner = ", user).filter("plate != ", GUEST_PLATE))
+        usercars = editablecars + [Car.GuestCar()]
         spots = list(Spot.all())
-        
-        template_values = {
+        themename, subtheme, themecolor = Configuration.GetTheme()
+
+        main    = JINJA_ENV.get_template('templates/html/subpages/main.html')
+        options = JINJA_ENV.get_template('templates/html/subpages/options.html')
+        future  = JINJA_ENV.get_template('templates/html/subpages/future.html')
+        index   = JINJA_ENV.get_template('templates/html/index.html')
+
+        mainpage_values = {
             "logout_url": logout_url,
             "user": user,
-            "usercars": usercars,
             "useradmin": users.is_current_user_admin(),
             "freespots": len([spot for spot in spots if spot.free]),
             "totalspots": len(spots),
+            "usercars": usercars,
+            }
+        mainpage = main.render(mainpage_values)
+
+        options_values = {
+            "logout_url": logout_url,
+            "editablecars": editablecars,
+            "themecolor": themecolor,
+            }
+        optionspage = options.render(options_values)
+
+        future_values = {
+            "logout_url": logout_url,
+            "useradmin": users.is_current_user_admin(),
             "reservablespots": len([spot for spot in spots if not spot.reserved]),
             }
+        futurepage = future.render(future_values)
 
-        main = JINJA_ENV.get_template('templates/html/subpages/main.html')
-        options = JINJA_ENV.get_template('templates/html/subpages/options.html')
-        future = JINJA_ENV.get_template('templates/html/subpages/future.html')
-        index = JINJA_ENV.get_template('templates/html/index.html')
-        self.response.out.write(index.render(
-            {
-                'mainpage': main.render(template_values),
-                'optionspage': options.render(template_values),
-                'futurepage': future.render(template_values),
+        index_values = {
+            "themename": themename,
+            "subtheme": subtheme,
+            "themecolor": themecolor,
+            "mainpage": mainpage,
+            "optionspage": optionspage,
+            "futurepage": futurepage,
             }
-            ))
+        
+        self.response.out.write(index.render(index_values))
 
 class SetCarHandler(webapp2.RequestHandler):
     def get(self):
@@ -189,6 +207,25 @@ class ReserveSpotHandler(webapp2.RequestHandler):
             spot = Spot.get(db.Key.from_path("Spot", self.request.get('spotnumber')))
             spot.Reserve(bool(int(self.request.get('reserve'))))
             
+            result['result'] = 'success'
+        except Exception, e:
+            result = {"result": "error",
+                      "reason": `e`,
+                      "args"  : self.request.arguments()
+                      }
+        self.response.out.write(json.dumps(result))
+
+class SetThemeHandler(webapp2.RequestHandler):
+    def get(self):
+        try:
+            result = {}
+            
+            Configuration.SetTheme(
+                                   self.request.get('themename'),
+                                   self.request.get('subtheme'),
+                                   self.request.get('themecolor')
+                                   )
+                        
             result['result'] = 'success'
         except Exception, e:
             result = {"result": "error",
