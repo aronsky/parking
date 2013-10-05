@@ -17,7 +17,7 @@ class MainHandler(webapp2.RequestHandler):
         user.inside = False
         editablecars = list(Car.all().filter("owner = ", user).filter("plate != ", GUEST_PLATE))
         usercars = editablecars + [Car.GuestCar()]
-        spots = list(Spot.all())
+        spots = list(Spot.all().filter("future = ", False))
         themename, subtheme, themecolor = Configuration.GetTheme()
 
         main    = JINJA_ENV.get_template('templates/html/subpages/main.html')
@@ -106,7 +106,7 @@ class GetSpotsHandler(webapp2.RequestHandler):
             user.name = make_name(user)
             user.inside = False
             
-            spots = Spot.all()
+            spots = Spot.all().filter('future = ', False)
             jsonspots = []
             
             for spot in spots:
@@ -145,14 +145,14 @@ class GetSpotsHandler(webapp2.RequestHandler):
 class GetFutureSpotsHandler(webapp2.RequestHandler):
     def get(self):
         try:
-            spots = Spot.all()
+            spots = Spot.all().filter('future = ', False)
             jsonspots = []
             
             for spot in spots:
                 jspot = {}
                 jspot['number'] = spot.number
-                jspot['reserved'] = spot.reserved
-                jspot['comments'] = ''
+                jspot['reserved'] = spot.reserved is not None
+                jspot['comments'] = spot.reserved.comments if spot.reserved else ""
                 jsonspots += [jspot]
                 
             result = {}
@@ -205,7 +205,7 @@ class ReserveSpotHandler(webapp2.RequestHandler):
             result = {}
             
             spot = Spot.get(db.Key.from_path("Spot", self.request.get('spotnumber')))
-            spot.Reserve(bool(int(self.request.get('reserve'))))
+            spot.Reserve(bool(int(self.request.get('reserve'))), self.request.get('comments'))
             
             result['result'] = 'success'
         except Exception, e:

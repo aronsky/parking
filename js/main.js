@@ -264,7 +264,7 @@ function reserve_spot()
     $.mobile.showPageLoadingMsg();
     
     $.ajax({
-        url: '/reservespot?reserve=1&spotnumber=' + $('input#reservespotnumber').val(),
+        url: '/reservespot?reserve=1&spotnumber=' + $('input#reservespotnumber').val() + '&comments=' + $('input#reservecomments').val(),
         dataType: 'json',
         success: function(data) {
             if (data["result"] == "error")

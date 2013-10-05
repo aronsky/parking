@@ -23,7 +23,11 @@ handlers:
   script: utils.app
   login: admin
 
-- url: /tasks/init
+- url: /tasks/initcars
+  script: utils.app
+  login: admin
+  
+- url: /tasks/initspots
   script: utils.app
   login: admin
 

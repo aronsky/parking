@@ -14,7 +14,6 @@
 
 {% block content %}
         <div class="inset">
-            
                 <ul data-role="listview" data-inset="true" id="carlist">
                     <li data-role="list-divider" role="heading" class="ui-li ui-li-divider ui-bar-b ui-first-child">Cars</li>
                     {% for car in editablecars %}
@@ -25,36 +24,41 @@
                         </a>
                     </li>
                     {% endfor %}
+                </ul>
+            <form>
+                <ul data-role="listview" data-inset="true">
                     <li>
-                        <div class="ui-btn ui-li">
-                            <div class="ui-btn-text">
-                                <a href="#addcar" class="ui-link-inherit" data-role="button" data-rel="popup" data-transition="pop" onclick="fill('','','','White')">
-                                    <i class="icon-plus"></i>
-                                    Add car...
-                                </a>
-                            </div>
+                        <div data-corners="true" data-shadow="true" data-iconshadow="true" data-wrapperels="a" data-theme="b" data-disabled="false" class="ui-submit ui-btn ui-btn-up-b ui-shadow ui-btn-corner-all" aria-disabled="false">
+                            <a href="#addcar" data-rel="popup" data-transition="pop" onclick="fill('','','','White')" data-inline="true">
+                                <span class="ui-btn-inner">
+                                    <span class="ui-btn-text">
+                                        <i class="icon-plus"></i>
+                                        Add car...
+                                    </span>
+                                </span>
+                            </a>
                         </div>
+                        
                     </li>
                     <li data-role="list-divider" role="heading" class="ui-li ui-li-divider ui-bar-b ui-first-child">Appearance</li>
                     <li data-role="fieldcontain">
-                        <form>
+                        
                         <label for="theme-color" class="select">Theme Color</label>
                         <select onchange="update_theme();" name="theme-color" id="theme-color" data-native-menu="true">
-
                             <option {% if themecolor == 'blue' %}selected{% endif %} value="blue">Blue</option>
                             <option {% if themecolor == 'green' %}selected{% endif %} value="green">Green</option>
                             <option {% if themecolor == 'purple' %}selected{% endif %} value="purple">Purple</option>
                             <option {% if themecolor == 'red' %}selected{% endif %} value="red">Red</option>
                             <option {% if themecolor == 'yellow' %}selected{% endif %} value="yellow">Yellow</option>
                         </select>
-                        </form>
+                        
                     </li>
                 </ul>
-            
+            </form>
         </div>
         
         <!-- Start of popup: #addcar -->
-        <div data-role="popup" id="addcar" data-theme="b">
+        <div data-role="popup" id="addcar" data-theme="b" data-position-to="window">
 
             <div data-role="header" data-theme="b"  style="padding-top: 5px;">
                 <h1>Car details</h1>
@@ -62,16 +66,16 @@
 
             <div data-role="content" data-theme="b">
                 <form>
-                    <div data-role="fieldcontain" class="ui-field-contain ui-body ui-br">
+                    <div style="width:auto" class="ui-shadow-inset ui-corner-all ui-btn-shadow ui-body-b">
                         <input type="text" placeholder="License Plate" name="plate" id="plate" value="" class="ui-input-text ui-body-c ui-corner-all ui-shadow-inset">
                     </div>
-                    <div data-role="fieldcontain" class="ui-field-contain ui-body ui-br">
+                    <div style="width:auto" class="ui-shadow-inset ui-corner-all ui-btn-shadow ui-body-b">
                         <input type="text" placeholder="Make" name="make" id="make" value="" class="ui-input-text ui-body-c ui-corner-all ui-shadow-inset">
                     </div>
-                    <div data-role="fieldcontain" class="ui-field-contain ui-body ui-br">
+                    <div style="width:auto" class="ui-shadow-inset ui-corner-all ui-btn-shadow ui-body-b">
                         <input type="text" placeholder="Model" name="model" id="model" value="" class="ui-input-text ui-body-c ui-corner-all ui-shadow-inset">
                     </div>
-                    <div data-role="fieldcontain" class="ui-field-contain ui-body ui-br">
+                    <div style="width:auto" class="ui-input-select ui-shadow-inset ui-corner-all ui-btn-shadow ui-body-b">
                         <select name="color" id="color" data-native-menu="true">
                             <option value="white">White</option>
                             <option value="blue">Blue</option>

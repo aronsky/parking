@@ -46,13 +46,16 @@ class Car(db.Model):
 class Spot(db.Model):
     number = db.IntegerProperty(required=True)
     free = db.BooleanProperty()
-    reserved = db.BooleanProperty()
+    reserved = db.SelfReferenceProperty(collection_name='future_set')
     car = db.ReferenceProperty(reference_class=Car)
     comments = db.StringProperty()
+    future = db.BooleanProperty()
     
-    def Take(self, car, comments=''):
+    def Take(self, car, comments=""):
         if not self.free:
             raise SpotTakenException("The spot is taken!")
+        if not car:
+            raise ParkingException("Can't reserve for None car!")
         self.free = False
         self.car = car
         self.comments = comments
@@ -66,21 +69,28 @@ class Spot(db.Model):
         self.free = True
         self.put()
     
-    def Reserve(self, reserve):
+    def Reserve(self, reserve, comments=""):
         if reserve:
-            self.reserved = True
+            if not self.reserved:
+                futurespot = Spot(number=self.number, free=False, reserved=None, car=Car.GuestCar(), comments=comments, future=True)
+                futurespot.put()
+                self.reserved = futurespot
+            else:
+                raise SpotReservedException()
         else:
-            self.reserved = False
+            if self.reserved:
+                self.reserved.delete()
+                self.reserved = None
+            else:
+                raise SpotNotReservedException()
         self.put()
 
     def Release(self):
         if not self.free:
             self.Leave()
         if self.reserved:
-            self.car = Car.GuestCar()
-            self.free = False
-            self.reserved = False
-            self.put()
+            self.Take(self.reserved.car, self.reserved.comments)
+            self.Reserve(False)
 
 class Configuration(db.Model):
     owner = db.UserProperty(required=True, auto_current_user_add=True)

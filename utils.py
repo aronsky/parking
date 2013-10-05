@@ -20,19 +20,25 @@ from datamodel import *
 
 class Clear(webapp2.RequestHandler):
     def get(self):
-        for spot in Spot.all():
+        for spot in Spot.all().filter("future = ", False):
             spot.Release()
         
-class Init(webapp2.RequestHandler):
+class InitSpots(webapp2.RequestHandler):
     def get(self):
         for spot in Spot.all():
             spot.delete()
-        for car in Car.all():
-            car.delete()
         for i in xrange(shared.SPOTS_COUNT):
-            spot = Spot.get_or_insert(str(i+1), number=i+1, free=True, reserved=False, car=None, comments='')
+            spot = Spot.get_or_insert(str(i+1), number=i+1, free=True, reserved=None, car=None, comments='', future=False)
             spot.put()
 
-app = webapp2.WSGIApplication([('/tasks/clear', Clear),
-                               ('/tasks/init', Init)],
+class InitCars(webapp2.RequestHandler):
+    def get(self):
+        for car in Car.all():
+            car.delete()
+
+app = webapp2.WSGIApplication([
+                               ('/tasks/clear', Clear),
+                               ('/tasks/initspots', InitSpots),
+                               ('/tasks/initcars', InitCars),
+                               ],
                               debug=True)

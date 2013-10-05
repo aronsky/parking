@@ -24,6 +24,12 @@ class SpotTakenException(ParkingException):
 class SpotNotTakenException(ParkingException):
     pass
 
+class SpotReservedException(ParkingException):
+    pass
+
+class SpotNotReservedException(ParkingException):
+    pass
+
 #############
 # Functions #
 #############
