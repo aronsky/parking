@@ -45,6 +45,8 @@ class MainHandler(webapp2.RequestHandler):
         future_values = {
             "logout_url": logout_url,
             "useradmin": users.is_current_user_admin(),
+            "freespots": len([spot for spot in spots if spot.free]),
+            "totalspots": len(spots),
             "reservablespots": len([spot for spot in spots if not spot.reserved]),
             }
         futurepage = future.render(future_values)
@@ -107,7 +109,8 @@ class GetSpotsHandler(webapp2.RequestHandler):
             user.inside = False
             
             spots = Spot.all().filter('future = ', False)
-            jsonspots = []
+            json_inisde_spots = []
+            json_outside_spots = []
             
             for spot in spots:
                 jspot = {}
@@ -129,11 +132,15 @@ class GetSpotsHandler(webapp2.RequestHandler):
                         jspot['label'] = spot.car.make + ' ' + spot.car.model
                 else:
                     jspot['parkable'] = True
-                jsonspots += [jspot]
+                if spot.outside:
+                    json_outside_spots += [jspot]
+                else:
+                    json_inisde_spots += [jspot]
                 
             result = {}
             
-            result['spots'] = jsonspots
+            result['inside_spots'] = json_inisde_spots
+            result['outside_spots'] = json_outside_spots
             result['result'] = 'success'
         except Exception, e:
             result = {"result": "error",
@@ -146,18 +153,24 @@ class GetFutureSpotsHandler(webapp2.RequestHandler):
     def get(self):
         try:
             spots = Spot.all().filter('future = ', False)
-            jsonspots = []
+            json_inside_spots = []
+            json_outside_spots = []
             
             for spot in spots:
                 jspot = {}
                 jspot['number'] = spot.number
                 jspot['reserved'] = spot.reserved is not None
                 jspot['comments'] = spot.reserved.comments if spot.reserved else ""
-                jsonspots += [jspot]
+                jspot['outside'] = spot.outside
+                if spot.outside:
+                    json_outside_spots += [jspot]
+                else:
+                    json_inside_spots += [jspot]
                 
             result = {}
             
-            result['spots'] = jsonspots
+            result['inside_spots'] = json_inside_spots
+            result['outside_spots'] = json_outside_spots
             result['result'] = 'success'
         except Exception, e:
             result = {"result": "error",

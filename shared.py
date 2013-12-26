@@ -2,7 +2,8 @@
 # Constants #
 #############
 
-SPOTS_COUNT = 5
+INSIDE_SPOTS_COUNT = 5
+OUTSIDE_SPOTS_COUNT = 2
 GUEST_PLATE = 9999999
 
 ##############

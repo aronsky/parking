@@ -111,7 +111,7 @@ function update_spots()
             }
             else
             {
-                $.each(data["spots"], function () {
+                spots_populator = function () {
                     var item = "";
                     if (this.free) {
                         if (this.parkable) {
@@ -131,7 +131,12 @@ function update_spots()
                     }
                     
                     listhtml += item;
-                })
+                }
+
+                listhtml += '<li><h3>Inside Spots</h3></li>';
+                $.each(data["inside_spots"], spots_populator);
+                listhtml += '<li><h3>Outside Spots</h3></li>';
+                $.each(data["outside_spots"], spots_populator);
                 sl.html(listhtml);
                 sl.listview("refresh");
             }
@@ -165,7 +170,7 @@ function update_future_spots()
             }
             else
             {
-                $.each(data["spots"], function () {
+                spots_populator = function () {
                     var item = "";
                     if (!this.reserved) {
                         item = '<li><a href="#confirmreserve" data-rel="popup" data-transition="pop" onclick="$(\'input#reservespotnumber\').val('+this.number+')">Empty</a></li>';
@@ -175,7 +180,13 @@ function update_future_spots()
                     }
                     
                     listhtml += item;
-                })
+                }
+
+                listhtml += '<li><h3>Inside Spots</h3></li>';
+                $.each(data["inside_spots"], spots_populator);
+                listhtml += '<li><h3>Outside Spots</h3></li>';
+                $.each(data["outside_spots"], spots_populator);
+
                 sl.html(listhtml);
                 sl.listview("refresh");
             }

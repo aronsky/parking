@@ -50,6 +50,7 @@ class Spot(db.Model):
     car = db.ReferenceProperty(reference_class=Car)
     comments = db.StringProperty()
     future = db.BooleanProperty()
+    outside = db.BooleanProperty()
     
     def Take(self, car, comments=""):
         if not self.free:
@@ -72,7 +73,7 @@ class Spot(db.Model):
     def Reserve(self, reserve, comments=""):
         if reserve:
             if not self.reserved:
-                futurespot = Spot(number=self.number, free=False, reserved=None, car=Car.GuestCar(), comments=comments, future=True)
+                futurespot = Spot(number=self.number, free=False, reserved=None, car=Car.GuestCar(), comments=comments, future=True, outside=self.outside)
                 futurespot.put()
                 self.reserved = futurespot
             else:

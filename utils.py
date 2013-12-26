@@ -25,10 +25,17 @@ class Clear(webapp2.RequestHandler):
         
 class InitSpots(webapp2.RequestHandler):
     def get(self):
+
         for spot in Spot.all():
             spot.delete()
-        for i in xrange(shared.SPOTS_COUNT):
-            spot = Spot.get_or_insert(str(i+1), number=i+1, free=True, reserved=None, car=None, comments='', future=False)
+
+        for i in xrange(shared.INSIDE_SPOTS_COUNT):
+            spot = Spot.get_or_insert(str(i+1), number=i+1, free=True, reserved=None, car=None, comments='', future=False, outside=False)
+            spot.put()
+
+        for j in xrange(shared.OUTSIDE_SPOTS_COUNT):
+            i = shared.INSIDE_SPOTS_COUNT + j
+            spot = Spot.get_or_insert(str(i+1), number=i+1, free=True, reserved=None, car=None, comments='', future=False, outside=True)
             spot.put()
 
 class InitCars(webapp2.RequestHandler):
