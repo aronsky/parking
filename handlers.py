@@ -186,7 +186,8 @@ class TakeSpotHandler(webapp2.RequestHandler):
             
             spot = Spot.get(db.Key.from_path("Spot", self.request.get('spotnumber')))
             car = Car.get(db.Key.from_path("Car", self.request.get('plate').replace('-','')))
-            spot.Take(car, comments=make_name(users.get_current_user()))
+            comments = make_name(users.get_current_user()) if car.prettyplate() == Car.GuestCar().prettyplate() else self.request.get('comments')
+            spot.Take(car, comments=comments)
             
             result['result'] = 'success'
         except Exception, e:
