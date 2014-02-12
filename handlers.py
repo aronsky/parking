@@ -186,7 +186,7 @@ class TakeSpotHandler(webapp2.RequestHandler):
             
             spot = Spot.get(db.Key.from_path("Spot", self.request.get('spotnumber')))
             car = Car.get(db.Key.from_path("Car", self.request.get('plate').replace('-','')))
-            spot.Take(car)
+            spot.Take(car, comments=make_name(users.get_current_user()))
             
             result['result'] = 'success'
         except Exception, e:
@@ -218,7 +218,7 @@ class ReserveSpotHandler(webapp2.RequestHandler):
             result = {}
             
             spot = Spot.get(db.Key.from_path("Spot", self.request.get('spotnumber')))
-            spot.Reserve(bool(int(self.request.get('reserve'))), self.request.get('comments'))
+            spot.Reserve(bool(int(self.request.get('reserve'))), comments=make_name(users.get_current_user()))
             
             result['result'] = 'success'
         except Exception, e:
