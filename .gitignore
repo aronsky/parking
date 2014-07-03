@@ -31,3 +31,6 @@ nosetests.xml
 
 # Visual Studio
 *.suo
+
+# Windows
+Thumbs.db
