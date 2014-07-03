@@ -3,7 +3,7 @@
 #############
 
 INSIDE_SPOTS_COUNT = 5
-OUTSIDE_SPOTS_COUNT = 2
+OUTSIDE_SPOTS_COUNT = 4
 GUEST_PLATE = 9999999
 
 ##############
