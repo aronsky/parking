@@ -6,6 +6,7 @@ INSIDE_SPOTS_COUNT = 5
 OUTSIDE_SPOTS_COUNT = 7
 GUEST_PLATE = 9999999
 
+
 ##############
 # Exceptions #
 ##############
