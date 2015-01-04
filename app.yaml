@@ -13,6 +13,10 @@ handlers:
   static_files: favicone.png
   upload: favicon\.png
 
+- url: /ios-logo\.png
+  static_files: ios-logo.png
+  upload: ios-logo\.png
+
 - url: /scripts/main\.js
   static_files: scripts/main.js
   upload: scripts/main.js
@@ -30,7 +34,7 @@ handlers:
 - url: /tasks/initcars
   script: utils.app
   login: admin
-  
+
 - url: /tasks/initspots
   script: utils.app
   login: admin
