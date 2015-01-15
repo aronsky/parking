@@ -129,15 +129,14 @@ class Configuration(db.Model):
         except:
             return False
 
-    @staticmethod
-    def MigrateSchema(cursor=None):
-        query = Configuration.all()
+def MigrateConfigurationSchema(cursor=None):
+    query = Configuration.all()
 
-        if cursor:
-            query.with_cursor(cursor)
+    if cursor:
+        query.with_cursor(cursor)
 
-        updated = list(query.fetch(limit=100))
+    updated = list(query.fetch(limit=100))
 
-        if updated:
-            db.put(updated)
-            deferred.defer(Configuration.MigrateSchema, cursor=query.cursor())
+    if updated:
+        db.put(updated)
+        deferred.defer(Configuration.MigrateSchema, cursor=query.cursor())

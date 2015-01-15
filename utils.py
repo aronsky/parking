@@ -44,15 +44,15 @@ class InitCars(webapp2.RequestHandler):
         for car in Car.all():
             car.delete()
 
-class MigrateConfigurationSchema(webapp2.RequestHandler):
+class MigrateConfigSchema(webapp2.RequestHandler):
     def get(self):
-        deferred.defer(Configuration.MigrateSchema)
+        deferred.defer(MigrateConfigurationSchema)
 
 
 app = webapp2.WSGIApplication([
                                ('/tasks/clear', Clear),
                                ('/tasks/initspots', InitSpots),
                                ('/tasks/initcars', InitCars),
-                               ('/tasks/migrateconfigschema', MigrateConfigurationSchema),
+                               ('/tasks/migrateconfigschema', MigrateConfigSchema),
                                ],
                               debug=True)
