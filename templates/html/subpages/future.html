@@ -3,13 +3,13 @@
     Parameters:
     
     logout_url: string, URL for logging out
-    useradmin: Boolean, true if user is admin, false otherwise
+    enablereservations: Boolean, true if user can make reservations, false otherwise
     freespots: int, number of free spots
     totalspots: int, spots count
     reservablespots: int, number of free spots
 -->
 
-{% if useradmin %}
+{% if enablereservations %}
 {% block pageid %}future{% endblock %}
 
 {% block header %}

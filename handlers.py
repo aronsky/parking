@@ -17,6 +17,7 @@ class MainHandler(webapp2.RequestHandler):
         user.inside = False
         editablecars = list(Car.all().filter("owner = ", user).filter("plate != ", GUEST_PLATE))
         usercars = editablecars + [Car.GuestCar()]
+        enablereservations = users.is_current_user_admin() or Configuration.GetEnableReservations()
         spots = list(Spot.all().filter("future = ", False))
         themename, subtheme, themecolor = Configuration.GetTheme()
 
@@ -28,7 +29,7 @@ class MainHandler(webapp2.RequestHandler):
         mainpage_values = {
             "logout_url": logout_url,
             "user": user,
-            "useradmin": users.is_current_user_admin(),
+            "enablereservations": enablereservations,
             "freespots": len([spot for spot in spots if spot.free]),
             "totalspots": len(spots),
             "usercars": usercars,
@@ -44,7 +45,7 @@ class MainHandler(webapp2.RequestHandler):
 
         future_values = {
             "logout_url": logout_url,
-            "useradmin": users.is_current_user_admin(),
+            "enablereservations": enablereservations,
             "freespots": len([spot for spot in spots if spot.free]),
             "totalspots": len(spots),
             "reservablespots": len([spot for spot in spots if not spot.reserved]),

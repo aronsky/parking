@@ -39,6 +39,10 @@ handlers:
   script: utils.app
   login: admin
 
+- url: /tasks/migrateconfigschema
+  script: utils.app
+  login: admin
+
 - url: .*
   script: main.app
   login: required

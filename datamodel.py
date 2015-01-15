@@ -1,5 +1,6 @@
 from shared import *
 from google.appengine.ext import db
+from google.appengine.ext import deferred
 from google.appengine.api import users
 
 class Car(db.Model):
@@ -98,6 +99,7 @@ class Configuration(db.Model):
     themename = db.StringProperty(required=True, choices=set(["nativedroid"]), default="nativedroid")
     subtheme = db.StringProperty(required=True, choices=set(["light", "dark"]), default="light")
     themecolor = db.StringProperty(required=True, choices=set(["blue", "green", "purple", "red", "yellow"]), default="blue")
+    enablereservations = db.BooleanProperty(required=True, default=False)
 
     @staticmethod
     def GetTheme():
@@ -118,3 +120,24 @@ class Configuration(db.Model):
         cfg.subtheme    = subtheme
         cfg.themecolor  = themecolor
         cfg.put()
+
+    @staticmethod
+    def GetEnableReservations():
+        try:
+            cfg = list(Configuration.all().filter("owner = ", users.get_current_user()))[0]
+            return cfg.enablereservations
+        except:
+            return False
+
+    @staticmethod
+    def MigrateSchema(cursor=None):
+        query = Configuration.all()
+
+        if cursor:
+            query.with_cursor(cursor)
+
+        updated = list(query.fetch(limit=100))
+
+        if updated:
+            db.put(updated)
+            deferred.defer(Configuration.MigrateSchema, cursor=query.cursor())
