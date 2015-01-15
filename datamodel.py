@@ -135,7 +135,13 @@ def MigrateConfigurationSchema(cursor=None):
     if cursor:
         query.with_cursor(cursor)
 
-    updated = list(query.fetch(limit=100))
+    updated = []
+    for cfg in query.fetch(limit=100):
+        if enablereservations in cfg and cfg.enablereservations:
+            continue
+        else:
+            cfg.enablereservations = False
+            updated.append(cfg)
 
     if updated:
         db.put(updated)
