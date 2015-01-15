@@ -17,7 +17,7 @@ class MainHandler(webapp2.RequestHandler):
         user.inside = False
         editablecars = list(Car.all().filter("owner = ", user).filter("plate != ", GUEST_PLATE))
         usercars = editablecars + [Car.GuestCar()]
-        enablereservations = users.is_current_user_admin() or Configuration.GetEnableReservations()
+        enablereservations = Configuration.GetEnableReservations()
         spots = list(Spot.all().filter("future = ", False))
         themename, subtheme, themecolor = Configuration.GetTheme()
 
