@@ -145,4 +145,4 @@ def MigrateConfigurationSchema(cursor=None):
 
     if updated:
         db.put(updated)
-        deferred.defer(Configuration.MigrateSchema, cursor=query.cursor())
+        deferred.defer(MigrateConfigurationSchema, cursor=query.cursor())
