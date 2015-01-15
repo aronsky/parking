@@ -26,26 +26,37 @@ class Clear(webapp2.RequestHandler):
 class InitSpots(webapp2.RequestHandler):
     def get(self):
 
+        self.response.out.write('Removing all spots...')
         for spot in Spot.all():
             spot.delete()
+        self.response.out.write(' OK!\r\n<br>')
 
+        self.response.out.write('Creating %d inside spots...' % shared.INSIDE_SPOTS_COUNT)
         for i in xrange(shared.INSIDE_SPOTS_COUNT):
             spot = Spot.get_or_insert(str(i+1), number=i+1, free=True, reserved=None, car=None, comments='', future=False, outside=False)
             spot.put()
+        self.response.out.write(' OK!\r\n<br>')
 
+        self.response.out.write('Creating %d outside spots...' % shared.OUTSIDE_SPOTS_COUNT)
         for j in xrange(shared.OUTSIDE_SPOTS_COUNT):
             i = shared.INSIDE_SPOTS_COUNT + j
             spot = Spot.get_or_insert(str(i+1), number=i+1, free=True, reserved=None, car=None, comments='', future=False, outside=True)
             spot.put()
+        self.response.out.write(' OK!\r\n<br>')
 
 class InitCars(webapp2.RequestHandler):
     def get(self):
+        self.response.out.write('Removing all cars...')
         for car in Car.all():
             car.delete()
+        self.response.out.write(' OK!\r\n<br>')
 
 class MigrateConfigSchema(webapp2.RequestHandler):
     def get(self):
-        Configuration.MigrateConfigurationSchema()
+        self.response.out.write('Upgrading configurations...')
+        updated = Configuration.MigrateConfigurationSchema()
+        self.response.out.write(' OK!\r\n<br>')
+        self.response.out.write('Upgraded %d configurations!' % updated)
 
 
 app = webapp2.WSGIApplication([

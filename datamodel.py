@@ -131,6 +131,7 @@ class Configuration(db.Model):
     @staticmethod
     def MigrateConfigurationSchema():
         updated = []
+        
         for cfg in Configuration.all():
             try:
                 cfg.enablereservations = cfg.enablereservations
@@ -140,3 +141,5 @@ class Configuration(db.Model):
 
         if updated:
             db.put(updated)
+
+        return len(updated)
