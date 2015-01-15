@@ -137,7 +137,7 @@ class Configuration(db.Model):
                 cfg.enablereservations = cfg.enablereservations
             except:
                 cfg.enablereservations = False
-                updated.append(cfg)
+            updated.append(cfg)
 
         if updated:
             db.put(updated)
