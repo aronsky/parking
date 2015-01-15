@@ -16,7 +16,6 @@
 #
 import webapp2
 import shared
-from google.appengine.ext import deferred
 from datamodel import *
 
 class Clear(webapp2.RequestHandler):
@@ -46,7 +45,7 @@ class InitCars(webapp2.RequestHandler):
 
 class MigrateConfigSchema(webapp2.RequestHandler):
     def get(self):
-        deferred.defer(MigrateConfigurationSchema)
+        Configuration.MigrateConfigurationSchema()
 
 
 app = webapp2.WSGIApplication([

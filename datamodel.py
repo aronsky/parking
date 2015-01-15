@@ -1,6 +1,5 @@
 from shared import *
 from google.appengine.ext import db
-from google.appengine.ext import deferred
 from google.appengine.api import users
 
 class Car(db.Model):
@@ -129,20 +128,15 @@ class Configuration(db.Model):
         except:
             return False
 
-def MigrateConfigurationSchema(cursor=None):
-    query = Configuration.all()
+    @staticmethod
+    def MigrateConfigurationSchema():
+        updated = []
+        for cfg in Configuration.all():
+            try:
+                cfg.enablereservations = cfg.enablereservations
+            except:
+                cfg.enablereservations = False
+                updated.append(cfg)
 
-    if cursor:
-        query.with_cursor(cursor)
-
-    updated = []
-    for cfg in query.fetch(limit=100):
-        if 'enablereservations' in cfg and cfg.enablereservations:
-            continue
-        else:
-            cfg.enablereservations = False
-            updated.append(cfg)
-
-    if updated:
-        db.put(updated)
-        deferred.defer(MigrateConfigurationSchema, cursor=query.cursor())
+        if updated:
+            db.put(updated)
