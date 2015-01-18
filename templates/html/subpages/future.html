@@ -7,6 +7,7 @@
     freespots: int, number of free spots
     totalspots: int, spots count
     reservablespots: int, number of free spots
+    usercars: list of cars belonging to current user
 -->
 
 {% if enablereservations %}
@@ -87,8 +88,8 @@
             </div><!-- /footer -->
         </div><!-- /popup confirmunreserve -->
 
-        <!-- Start of popup: #confirmreserve -->
-        <div data-role="popup" id="confirmreserve" data-position-to="window">
+        <!-- Start of popup: #confirmguestreserve -->
+        <div data-role="popup" id="confirmguestreserve" data-position-to="window">
 
             <div data-role="header" data-theme="b" style="padding-top: 5px;">
                 <h1>Reservation</h1>
@@ -101,12 +102,12 @@
                             <fieldset class="ui-grid-a">
                                 <legend style="width:auto">Reserve spot for a guest?</legend>
                                 <div style="width:auto" class="ui-shadow-inset ui-corner-all ui-btn-shadow ui-body-b">
-                                    <input type="text" id="reservecomments" placeholder="Comments (optional)"/>
+                                    <input type="text" id="reservecomments" placeholder="Comments (optional)" />
                                 </div>
                                 <div class="ui-block-a">
                                     <div data-corners="true" data-shadow="true" data-iconshadow="true" data-wrapperels="span" data-theme="b" data-disabled="false" class="ui-submit ui-btn ui-btn-up-b ui-shadow ui-btn-corner-all" aria-disabled="false">
                                         <span class="ui-btn-inner">
-                                            <span class="ui-btn-text"><a href="#future" onclick="reserve_spot();" data-inline="true">Reserve spot</a></span>
+                                            <span class="ui-btn-text"><a href="#future" onclick="reserve_spot({{ guestcar.plate }});" data-inline="true">Reserve spot</a></span>
                                         </span>
                                     </div>
                                 </div>
@@ -122,13 +123,36 @@
                     </ul>
                 </form>
             </div><!-- /content -->
-            
+
+            <div data-role="footer">
+                <h4>&nbsp;</h4>
+            </div><!-- /footer -->
+        </div><!-- /popup confirmguestreserve -->
+
+        <!-- Start of popup: #confirmreserve -->
+        <div data-role="popup" id="confirmreserve" data-position-to="window">
+
+            <div data-role="header" data-theme="b" style="padding-top: 5px;">
+                <h1>Reservation</h1>
+            </div><!-- /header -->
+
+            <div data-role="content" data-theme="b">
+                <h2>What car are you driving?</h2>
+                <div class="inset">
+                    <!--nativeDroid workaround-->
+                    <ul data-role="listview" data-inset="true">
+                        {% for car in usercars %}
+                        <li><a href="#main" onclick="reserve_spot({{ car.plate }});">{{ car.make }} {{ car.model }} // {{ car.color.title() }}</a></li>
+                        {% endfor %}
+                        <li><a href="#confirmguestreserve" data-rel="popup" data-transition="pop">{{ guestcar.make }} {{ guestcar.model }} // {{ guestcar.color.title() }}</a></li>
+                    </ul>
+                </div>
+            </div><!-- /content -->
+
             <div data-role="footer">
                 <h4>&nbsp;</h4>
             </div><!-- /footer -->
         </div><!-- /popup confirmreserve -->
-
-
 {% endblock %}
 {% block footer %}
         <div data-role="navbar">

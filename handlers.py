@@ -16,7 +16,7 @@ class MainHandler(webapp2.RequestHandler):
         user.name = make_name(user)
         user.inside = False
         editablecars = list(Car.all().filter("owner = ", user).filter("plate != ", GUEST_PLATE))
-        usercars = editablecars + [Car.GuestCar()]
+        usercars = editablecars
         enablereservations = Configuration.GetEnableReservations()
         spots = list(Spot.all().filter("future = ", False))
         themename, subtheme, themecolor = Configuration.GetTheme()
@@ -33,6 +33,7 @@ class MainHandler(webapp2.RequestHandler):
             "freespots": len([spot for spot in spots if spot.free]),
             "totalspots": len(spots),
             "usercars": usercars,
+            "guestcar": Car.GuestCar(),
             }
         mainpage = main.render(mainpage_values)
 
@@ -49,6 +50,8 @@ class MainHandler(webapp2.RequestHandler):
             "freespots": len([spot for spot in spots if spot.free]),
             "totalspots": len(spots),
             "reservablespots": len([spot for spot in spots if not spot.reserved]),
+            "usercars": usercars,
+            "guestcar": Car.GuestCar(),
             }
         futurepage = future.render(future_values)
 
@@ -163,6 +166,15 @@ class GetFutureSpotsHandler(webapp2.RequestHandler):
                 jspot['reserved'] = spot.reserved is not None
                 jspot['comments'] = spot.reserved.comments if spot.reserved else ""
                 jspot['outside'] = spot.outside
+                if spot.reserved is not None and spot.reserved.car is not None:
+                    if spot.reserved.car.plate == GUEST_PLATE:
+                        jspot['name'] = "Guest"
+                        jspot['label'] = "Reserved for a guest"
+                        jspot['plate'] = GUEST_PLATE
+                    else:
+                        jspot['name'] = make_name(spot.reserved.car.owner)
+                        jspot['label'] = spot.reserved.car.make + ' ' + spot.reserved.car.model
+                        jspot['plate'] = spot.reserved.car.plate
                 if spot.outside:
                     json_outside_spots += [jspot]
                 else:
@@ -220,7 +232,12 @@ class ReserveSpotHandler(webapp2.RequestHandler):
             result = {}
             
             spot = Spot.get(db.Key.from_path("Spot", self.request.get('spotnumber')))
-            spot.Reserve(bool(int(self.request.get('reserve'))), comments=make_name(users.get_current_user()))
+
+            if bool(int(self.request.get('reserve'))):
+                car = Car.get(db.Key.from_path("Car", self.request.get('plate').replace('-','')))
+                spot.Reserve(True, car, comments=make_name(users.get_current_user()))
+            else:
+                spot.Reserve(False, comments=make_name(users.get_current_user()))
             
             result['result'] = 'success'
         except Exception, e:

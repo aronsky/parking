@@ -6,7 +6,8 @@
     user: User object, representing the current user
     freespots: int, number of free spots
     totalspots: int, spots count
-    usercars: list of cars belonging to current user
+    usercars: [Car], list of cars belonging to current user
+    guestcar: Car, the guest car
 -->
 
 {% block pageid %}main{% endblock %}
@@ -82,6 +83,7 @@
                         {% for car in usercars %}
                         <li><a href="#main" onclick="take_spot({{ car.plate }});">{{ car.make }} {{ car.model }} // {{ car.color.title() }}</a></li>
                         {% endfor %}
+                        <li><a href="#main" onclick="take_spot({{ guestcar.plate }});">{{ guestcar.make }} {{ guestcar.model }} // {{ guestcar.color.title() }}</a></li>
                     </ul>
                 </div>
             </div><!-- /content -->

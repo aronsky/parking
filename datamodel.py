@@ -70,10 +70,12 @@ class Spot(db.Model):
         self.free = True
         self.put()
     
-    def Reserve(self, reserve, comments=""):
+    def Reserve(self, reserve, car=None, comments=""):
         if reserve:
+            if not car:
+                car = Car.GuestCar()
             if not self.reserved:
-                futurespot = Spot(number=self.number, free=False, reserved=None, car=Car.GuestCar(), comments=comments, future=True, outside=self.outside)
+                futurespot = Spot(number=self.number, free=False, reserved=None, car=car, comments=comments, future=True, outside=self.outside)
                 futurespot.put()
                 self.reserved = futurespot
             else:

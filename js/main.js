@@ -176,7 +176,7 @@ function update_future_spots()
                         item = '<li><a href="#confirmreserve" data-rel="popup" data-transition="pop" onclick="$(\'input#reservespotnumber\').val('+this.number+')">Empty</a></li>';
                     }
                     else {
-                        item = '<li><a href="#confirmunreserve" data-rel="popup" data-transition="pop" onclick="$(\'input#unreservespotnumber\').val('+this.number+')"><h3>Guest</h3><p><strong>Reserved</strong></p><p class="ui-li-aside"><strong>' + this.comments + '</strong></p></a></li>';
+                        item = '<li><a href="#confirmunreserve" data-rel="popup" data-transition="pop" onclick="$(\'input#unreservespotnumber\').val('+this.number+')"><h3>'+this.label+'</h3><p><strong>Reserved</strong></p><p class="ui-li-aside"><strong>' + this.comments + '</strong></p></a></li>';
                     }
                     
                     listhtml += item;
@@ -269,13 +269,13 @@ function leave_spot(plate)
         });
 }
 
-function reserve_spot()
+function reserve_spot(plate)
 {
     $("body").addClass("ui-disabled");
     $.mobile.showPageLoadingMsg();
     
     $.ajax({
-        url: '/reservespot?reserve=1&spotnumber=' + $('input#reservespotnumber').val() + '&comments=' + $('input#reservecomments').val(),
+        url: '/reservespot?reserve=1&spotnumber=' + $('input#reservespotnumber').val() + '&comments=' + $('input#reservecomments').val() + '&plate=' + plate,
         dataType: 'json',
         success: function(data) {
             if (data["result"] == "error")
@@ -310,7 +310,7 @@ function unreserve_spot()
     $.mobile.showPageLoadingMsg();
     
     $.ajax({
-        url: '/reservespot?reserve=0&spotnumber=' + $('input#unreservespotnumber').val(),
+        url: '/reservespot?reserve=0&spotnumber=' + $('input#unreservespotnumber').val() +'&plate=',
         dataType: 'json',
         success: function(data) {
             if (data["result"] == "error")
