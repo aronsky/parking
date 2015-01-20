@@ -232,12 +232,13 @@ class ReserveSpotHandler(webapp2.RequestHandler):
             result = {}
             
             spot = Spot.get(db.Key.from_path("Spot", self.request.get('spotnumber')))
+            comments = self.request.get('comments') or make_name(users.get_current_user())
 
             if bool(int(self.request.get('reserve'))):
                 car = Car.get(db.Key.from_path("Car", self.request.get('plate').replace('-','')))
-                spot.Reserve(True, car, comments=make_name(users.get_current_user()))
+                spot.Reserve(True, car, comments)
             else:
-                spot.Reserve(False, comments=make_name(users.get_current_user()))
+                spot.Reserve(False)
             
             result['result'] = 'success'
         except Exception, e:

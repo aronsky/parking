@@ -8,7 +8,19 @@ class Car(db.Model):
     model = db.StringProperty(required=True)
     color = db.StringProperty(required=True, choices=set(["red","green","blue","white","turquoise","gray","black","silver","brown","yellow","orange","other"]))
     owner = db.UserProperty(required=True, auto_current_user_add=True)
-    
+
+    def __eq__(self, other):
+        if isinstance(other, Car):
+            return self.plate == other.plate
+        else:
+            raise NotImplementedError()
+
+    def __ne__(self, other):
+        if isinstance(other, Car):
+            return self.plate != other.plate
+        else:
+            raise NotImplementedError()
+
     @staticmethod
     def Store(plate, make, model, color):
         car = Car.get_or_insert(str(plate), plate=plate, model=model, make=make, color=color)
@@ -74,6 +86,8 @@ class Spot(db.Model):
         if reserve:
             if not car:
                 car = Car.GuestCar()
+            if car != Car.GuestCar():
+                comments = ""
             if not self.reserved:
                 futurespot = Spot(number=self.number, free=False, reserved=None, car=car, comments=comments, future=True, outside=self.outside)
                 futurespot.put()
