@@ -133,9 +133,9 @@ function update_spots()
                     listhtml += item;
                 }
 
-                listhtml += '<li><h3>Inside Spots</h3><h4>Lobby Phone#: <a href="tel:036071812">03-607-1812</a></h4></li>';
+                listhtml += '<li><h3>Inside Spots</h3><h5 class="ui-li-heading-small">Lobby Phone#: <a href="tel:036071812">03-607-1812</a></h5></li>';
                 $.each(data["inside_spots"], spots_populator);
-                listhtml += '<li><h3>Outside Spots</h3><h4>Moshe Salti Parking Lot</h4></li>';
+                listhtml += '<li><h3>Outside Spots</h3><h5 class="ui-li-heading-small">Moshe Salti Parking Lot</h5></li>';
                 $.each(data["outside_spots"], spots_populator);
                 sl.html(listhtml);
                 sl.listview("refresh");
