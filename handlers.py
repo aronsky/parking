@@ -193,14 +193,35 @@ class GetFutureSpotsHandler(webapp2.RequestHandler):
         self.response.out.write(json.dumps(result))
         
 class TakeSpotHandler(webapp2.RequestHandler):
+    def _take_specific(self):
+        spot = Spot.get(db.Key.from_path("Spot", self.request.get('spotnumber')))
+        car = Car.get(db.Key.from_path("Car", self.request.get('plate').replace('-','')))
+        comments = make_name(users.get_current_user()) if car.prettyplate() == Car.GuestCar().prettyplate() else self.request.get('comments')
+        spot.Take(car, comments=comments)
+
+    def _take_inside(self):
+        spot = Spot.all().filter("free =", True).filter("future =", False).filter("outside =", False).get()
+        car = Car.get(db.Key.from_path("Car", self.request.get('plate').replace('-','')))
+        comments = make_name(users.get_current_user()) if car.prettyplate() == Car.GuestCar().prettyplate() else self.request.get('comments')
+        spot.Take(car, comments=comments)
+
+    def _take_outside(self):
+        spot = Spot.all().filter("free =", True).filter("future =", False).filter("outside =", True).get()
+        car = Car.get(db.Key.from_path("Car", self.request.get('plate').replace('-','')))
+        comments = make_name(users.get_current_user()) if car.prettyplate() == Car.GuestCar().prettyplate() else self.request.get('comments')
+        spot.Take(car, comments=comments)
+
     def get(self):
+        result = {}
         try:
-            result = {}
-            
-            spot = Spot.get(db.Key.from_path("Spot", self.request.get('spotnumber')))
-            car = Car.get(db.Key.from_path("Car", self.request.get('plate').replace('-','')))
-            comments = make_name(users.get_current_user()) if car.prettyplate() == Car.GuestCar().prettyplate() else self.request.get('comments')
-            spot.Take(car, comments=comments)
+            if self.request.get('spotnumber') is not None:
+                self._take_specific()
+            elif self.request.get('spottype') == 'inside':
+                self._take_inside()
+            elif self.request.get('spottype') == 'outside':
+                self._take_outside()
+            else:
+                raise Exception("Nothing to get!")
             
             result['result'] = 'success'
         except Exception, e:
@@ -211,12 +232,22 @@ class TakeSpotHandler(webapp2.RequestHandler):
         self.response.out.write(json.dumps(result))
 
 class LeaveSpotHandler(webapp2.RequestHandler):
+    def _leave_specific(self):
+        spot = Spot.get(db.Key.from_path("Spot", self.request.get('spotnumber')))
+        spot.Leave()
+
+    def _leave_any(self):
+        for spot in Spot.all():
+            if spot.car and spot.car != Car.GuestCar():
+                spot.Leave()
+
     def get(self):
+        result = {}
         try:
-            result = {}
-            
-            spot = Spot.get(db.Key.from_path("Spot", self.request.get('spotnumber')))
-            spot.Leave()
+            if self.request.get('spotnumber') is not None:
+                self._leave_specific()
+            else:
+                self._leave_any()
             
             result['result'] = 'success'
         except Exception, e:
