@@ -17,10 +17,6 @@ handlers:
   static_files: ios-logo.png
   upload: ios-logo\.png
 
-- url: /scripts/main\.js
-  static_files: scripts/main.js
-  upload: scripts/main.js
-
 - url: /css
   static_dir: css
 

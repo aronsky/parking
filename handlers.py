@@ -18,6 +18,7 @@ class MainHandler(webapp2.RequestHandler):
         editablecars = list(Car.all().filter("owner = ", user).filter("plate != ", GUEST_PLATE))
         usercars = editablecars
         enablereservations = Configuration.GetEnableReservations()
+        enablespotspecification = Configuration.GetEnableSpotSpecification()
         spots = list(Spot.all().filter("future = ", False))
         themename, subtheme, themecolor = Configuration.GetTheme()
 
@@ -65,6 +66,20 @@ class MainHandler(webapp2.RequestHandler):
             }
         
         self.response.out.write(index.render(index_values))
+
+class ScriptHandler(webapp2.RequestHandler):
+    def get(self):
+        enablespotspecification = Configuration.GetEnableSpotSpecification()
+        
+        script_tpl = JINJA_ENV.get_template('templates/js/main.js')
+
+        script_values = {
+            "enablespotspecification": enablespotspecification,
+            }
+        script = script_tpl.render(script_values)
+
+        self.response.headers["Content-Type"] = "text/javascript"
+        self.response.out.write(script)
 
 class SetCarHandler(webapp2.RequestHandler):
     def get(self):

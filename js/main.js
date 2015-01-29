@@ -90,7 +90,7 @@ function delete_car()
         });
 }
 
-function update_spots()
+function update_spots_specific()
 {
     sl = $('ul#spotlist');
     sl.children().empty(); // Clear the list
@@ -133,8 +133,11 @@ function update_spots()
                     listhtml += item;
                 }
 
+                // Inside spots
                 listhtml += '<li><h3>Inside Spots</h3><h5 class="ui-li-heading-small">Lobby Phone#: <a href="tel:036071812">03-607-1812</a></h5></li>';
                 $.each(data["inside_spots"], spots_populator);
+
+                // Outside spots
                 listhtml += '<li><h3>Outside Spots</h3><h5 class="ui-li-heading-small">Moshe Salti Parking Lot</h5></li>';
                 $.each(data["outside_spots"], spots_populator);
                 sl.html(listhtml);
@@ -142,6 +145,65 @@ function update_spots()
             }
         },
         error: function(data) {
+            alert("Unexpected error has occured!");
+            $.mobile.hidePageLoadingMsg();
+            $.mobile.changePage('#main');
+        }
+    });
+}
+
+function update_spots_generic() {
+    sl = $('ul#spotlist');
+    sl.children().empty(); // Clear the list
+    listhtml = "";
+
+    $.mobile.showPageLoadingMsg();
+
+    $.ajax({
+        url: '/getspots',
+        dataType: 'json',
+        success: function (data) {
+            $.mobile.hidePageLoadingMsg();
+            if (data["result"] == "error") {
+                alert(data["reason"]);
+                alert(data["args"]);
+                $.mobile.changePage('#main');
+            }
+            else {
+                spots_populator = function () {
+                    var item = "";
+                    if (this.free) {
+                        if (this.parkable) {
+                            item = '<li><a href="#confirmtake" data-rel="popup" data-transition="pop" onclick="$(\'input#takespotnumber\').val(' + this.number + ')">Empty</a></li>';
+                        }
+                        else {
+                            item = "<li>Empty</li>";
+                        }
+                    }
+                    else {
+                        if (this.leavable) {
+                            item = '<li><a href="#confirmleave" data-rel="popup" data-transition="pop" onclick="$(\'input#leavespotnumber\').val(' + this.number + ')"><h3>' + this.name + '</h3><p><strong>' + this.label + '</strong></p><p class="ui-li-aside"><strong>' + this.comments + '</strong></p></a></li>';
+                        }
+                        else {
+                            item = '<li><h3>' + this.name + '</h3><p><strong>' + this.label + '</strong></p><p class="ui-li-aside"><strong>' + this.comments + '</strong></p></li>';
+                        }
+                    }
+
+                    listhtml += item;
+                }
+
+                // Inside spots
+                listhtml += '<li><h3>Inside Spots</h3><h5 class="ui-li-heading-small">Lobby Phone#: <a href="tel:036071812">03-607-1812</a></h5></li>';
+                $.each(data["inside_spots"], spots_populator);
+
+                // Outside spots
+                listhtml += '<li><h3>Outside Spots</h3><h5 class="ui-li-heading-small">Moshe Salti Parking Lot</h5></li>';
+                $.each(data["outside_spots"], spots_populator);
+                sl.html(listhtml);
+                sl.listview("refresh");
+            }
+        },
+        error: function (data) {
             alert("Unexpected error has occured!");
             $.mobile.hidePageLoadingMsg();
             $.mobile.changePage('#main');
@@ -182,8 +244,11 @@ function update_future_spots()
                     listhtml += item;
                 }
 
+                // Inside spots
                 listhtml += '<li><h3>Inside Spots</h3></li>';
                 $.each(data["inside_spots"], spots_populator);
+
+                // Outside spots
                 listhtml += '<li><h3>Outside Spots</h3></li>';
                 $.each(data["outside_spots"], spots_populator);
 
@@ -376,5 +441,5 @@ $('#future').on('pageshow', function (event) {
 });
 
 $('#main').on('pageshow', function (event) {
-    update_spots();
+    update_spots_generic();
 });
