@@ -8,6 +8,7 @@
     totalspots: int, spots count
     usercars: [Car], list of cars belonging to current user
     guestcar: Car, the guest car
+    enablespotspecification: bool, disables use of guest car if false
 -->
 
 {% block pageid %}main{% endblock %}
@@ -43,8 +44,9 @@
 		</div><!-- /content-primary -->
         
         <form>
-            <input id="takespotnumber" type="hidden"></input>
-            <input id="leavespotnumber" type="hidden"></input>
+            <input id="takespotnumber" type="hidden" />
+            <input id="takespottype" type="hidden" />
+            <input id="leavespotnumber" type="hidden" />
         </form>
         
         <!-- Start of popup: #confirmleave -->
@@ -83,7 +85,9 @@
                         {% for car in usercars %}
                         <li><a href="#main" onclick="take_spot({{ car.plate }});">{{ car.make }} {{ car.model }} // {{ car.color.title() }}</a></li>
                         {% endfor %}
+                        {% if enablespotspecification %}
                         <li><a href="#main" onclick="take_spot({{ guestcar.plate }});">{{ guestcar.make }} {{ guestcar.model }} // {{ guestcar.color.title() }}</a></li>
+                        {% endif %}
                     </ul>
                 </div>
             </div><!-- /content -->

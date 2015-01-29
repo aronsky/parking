@@ -170,35 +170,60 @@ function update_spots_generic() {
                 $.mobile.changePage('#main');
             }
             else {
-                spots_populator = function () {
-                    var item = "";
-                    if (this.free) {
-                        if (this.parkable) {
-                            item = '<li><a href="#confirmtake" data-rel="popup" data-transition="pop" onclick="$(\'input#takespotnumber\').val(' + this.number + ')">Empty</a></li>';
-                        }
-                        else {
-                            item = "<li>Empty</li>";
-                        }
-                    }
-                    else {
-                        if (this.leavable) {
-                            item = '<li><a href="#confirmleave" data-rel="popup" data-transition="pop" onclick="$(\'input#leavespotnumber\').val(' + this.number + ')"><h3>' + this.name + '</h3><p><strong>' + this.label + '</strong></p><p class="ui-li-aside"><strong>' + this.comments + '</strong></p></a></li>';
-                        }
-                        else {
-                            item = '<li><h3>' + this.name + '</h3><p><strong>' + this.label + '</strong></p><p class="ui-li-aside"><strong>' + this.comments + '</strong></p></li>';
-                        }
+                var inside_full = true;
+                var outside_full = true;
+                var inside_parked = false;
+                var outside_parked = false;
+
+                inside_spots_populator = function () {
+                    if (!inside_parked && !outside_parked && this.free && this.parkable) {
+                        inside_full = false;
                     }
 
-                    listhtml += item;
+                    if (!this.free && this.leavable) {
+                        inside_parked = true;
+                    }
                 }
 
-                // Inside spots
-                listhtml += '<li><h3>Inside Spots</h3><h5 class="ui-li-heading-small">Lobby Phone#: <a href="tel:036071812">03-607-1812</a></h5></li>';
-                $.each(data["inside_spots"], spots_populator);
+                outside_spots_populator = function () {
+                    if (!inside_parked && !outside_parked && this.free && this.parkable) {
+                        outside_full = false;
+                    }
 
-                // Outside spots
-                listhtml += '<li><h3>Outside Spots</h3><h5 class="ui-li-heading-small">Moshe Salti Parking Lot</h5></li>';
-                $.each(data["outside_spots"], spots_populator);
+                    if (!this.free && this.leavable) {
+                        outside_parked = true;
+                    }
+                }
+
+                $.each(data["inside_spots"], inside_spots_populator);
+                $.each(data["outside_spots"], outside_spots_populator);
+
+                if (inside_parked) {
+                    // Already parked inside!
+                    listhtml += '<li><h3>Already Parked Inside!</h3><h5 class="ui-li-heading-small">Lobby Phone#: <a href="tel:036071812">03-607-1812</a></h5></li>';
+                    listhtml += '<li><a href="#confirmleave" data-rel="popup" data-transition="pop"><h3>Leave</h3></a></li>';
+                } else if (outside_parked) {
+                    // Already parked outside!
+                    listhtml += '<li><h3>Already Parked Outside!</h3><h5 class="ui-li-heading-small">Moshe Salti Parking Lot</h5></li>';
+                    listhtml += '<li><a href="#confirmleave" data-rel="popup" data-transition="pop"><h3>Leave</h3></a></li>';
+                } else {
+                    // Inside spots
+                    listhtml += '<li><h3>Inside Spots</h3><h5 class="ui-li-heading-small">Lobby Phone#: <a href="tel:036071812">03-607-1812</a></h5></li>';
+                    if (inside_full) {
+                        listhtml += "<li><h3>Full</h3></li>";
+                    } else {
+                        listhtml += '<li><a href="#confirmtake" data-rel="popup" data-transition="pop" onclick="$(\'input#takespottype\').val(\'inside\')">Empty</a></li>';
+                    }
+                    
+                    // Outside spots
+                    listhtml += '<li><h3>Outside Spots</h3><h5 class="ui-li-heading-small">Moshe Salti Parking Lot</h5></li>';
+                    if (outside_full) {
+                        listhtml += "<li><h3>Full</h3></li>";
+                    } else {
+                        listhtml += '<li><a href="#confirmtake" data-rel="popup" data-transition="pop" onclick="$(\'input#takespottype\').val(\'outside\')">Empty</a></li>';
+                    }
+                }
+
                 sl.html(listhtml);
                 sl.listview("refresh");
             }
@@ -268,9 +293,17 @@ function take_spot(plate)
 {
     $("body").addClass("ui-disabled");
     $.mobile.showPageLoadingMsg();
+
+    var spotnumberortype = "";
+
+    if ($('input#takespotnumber').val() != "") {
+        spotnumberortype = '&spotnumber=' + $('input#takespotnumber').val();
+    } else {
+        spotnumberortype = '&spottype=' + $('input#takespottype').val();
+    }
     
     $.ajax({
-        url: '/takespot?plate=' + plate + '&spotnumber=' + $('input#takespotnumber').val(),
+        url: '/takespot?plate=' + plate + spotnumberortype,
         dataType: 'json',
         success: function(data) {
             if (data["result"] == "error")

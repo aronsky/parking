@@ -31,6 +31,7 @@ class MainHandler(webapp2.RequestHandler):
             "logout_url": logout_url,
             "user": user,
             "enablereservations": enablereservations,
+            "enablespotspecification": enablespotspecification,
             "freespots": len([spot for spot in spots if spot.free]),
             "totalspots": len(spots),
             "usercars": usercars,
@@ -141,7 +142,7 @@ class GetSpotsHandler(webapp2.RequestHandler):
                         jspot['name'] = "Guest"
                         jspot['label'] = "Reserved"
                         jspot['plate'] = GUEST_PLATE
-                        jspot['leavable'] = True
+                        jspot['leavable'] = Configuration.GetEnableSpotSpecification()
                     else:
                         if spot.car.owner == user:
                             user.inside = True
@@ -217,26 +218,24 @@ class TakeSpotHandler(webapp2.RequestHandler):
     def _take_inside(self):
         spot = Spot.all().filter("free =", True).filter("future =", False).filter("outside =", False).get()
         car = Car.get(db.Key.from_path("Car", self.request.get('plate').replace('-','')))
-        comments = make_name(users.get_current_user()) if car.prettyplate() == Car.GuestCar().prettyplate() else self.request.get('comments')
+        comments = self.request.get('comments')
         spot.Take(car, comments=comments)
 
     def _take_outside(self):
         spot = Spot.all().filter("free =", True).filter("future =", False).filter("outside =", True).get()
         car = Car.get(db.Key.from_path("Car", self.request.get('plate').replace('-','')))
-        comments = make_name(users.get_current_user()) if car.prettyplate() == Car.GuestCar().prettyplate() else self.request.get('comments')
+        comments = self.request.get('comments')
         spot.Take(car, comments=comments)
 
     def get(self):
         result = {}
         try:
-            if self.request.get('spotnumber') is not None:
-                self._take_specific()
-            elif self.request.get('spottype') == 'inside':
+            if self.request.get('spottype') == 'inside':
                 self._take_inside()
             elif self.request.get('spottype') == 'outside':
                 self._take_outside()
             else:
-                raise Exception("Nothing to get!")
+                self._take_specific()
             
             result['result'] = 'success'
         except Exception, e:
@@ -259,7 +258,7 @@ class LeaveSpotHandler(webapp2.RequestHandler):
     def get(self):
         result = {}
         try:
-            if self.request.get('spotnumber') is not None:
+            if self.request.get('spotnumber') != "":
                 self._leave_specific()
             else:
                 self._leave_any()
