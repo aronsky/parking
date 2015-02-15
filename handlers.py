@@ -22,10 +22,11 @@ class MainHandler(webapp2.RequestHandler):
         spots = list(Spot.all().filter("future = ", False))
         themename, subtheme, themecolor = Configuration.GetTheme()
 
-        main    = JINJA_ENV.get_template('templates/html/subpages/main.html')
-        options = JINJA_ENV.get_template('templates/html/subpages/options.html')
-        future  = JINJA_ENV.get_template('templates/html/subpages/future.html')
-        index   = JINJA_ENV.get_template('templates/html/index.html')
+        main        = JINJA_ENV.get_template('templates/html/subpages/main.html')
+        downtime    = JINJA_ENV.get_template('templates/html/subpages/downtime.html')
+        options     = JINJA_ENV.get_template('templates/html/subpages/options.html')
+        future      = JINJA_ENV.get_template('templates/html/subpages/future.html')
+        index       = JINJA_ENV.get_template('templates/html/index.html')
 
         mainpage_values = {
             "logout_url": logout_url,
@@ -38,6 +39,13 @@ class MainHandler(webapp2.RequestHandler):
             "guestcar": Car.GuestCar(),
             }
         mainpage = main.render(mainpage_values)
+
+        downtime_values = {
+            "logout_url": logout_url,
+            "user": user,
+            "enablereservations": enablereservations,
+            }
+        downtimepage = downtime.render(downtime_values)
 
         options_values = {
             "logout_url": logout_url,
@@ -61,7 +69,7 @@ class MainHandler(webapp2.RequestHandler):
             "themename": themename,
             "subtheme": subtheme,
             "themecolor": themecolor,
-            "mainpage": mainpage,
+            "mainpage": downtimepage if is_downtime() else mainpage,
             "optionspage": optionspage,
             "futurepage": futurepage,
             }
@@ -230,6 +238,7 @@ class TakeSpotHandler(webapp2.RequestHandler):
     def get(self):
         result = {}
         try:
+            assert is_downtime() == False
             if self.request.get('spottype') == 'inside':
                 self._take_inside()
             elif self.request.get('spottype') == 'outside':
@@ -258,6 +267,7 @@ class LeaveSpotHandler(webapp2.RequestHandler):
     def get(self):
         result = {}
         try:
+            assert is_downtime() == False
             if self.request.get('spotnumber') != "":
                 self._leave_specific()
             else:

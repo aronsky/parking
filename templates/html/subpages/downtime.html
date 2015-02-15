@@ -1,0 +1,39 @@
+{% extends "templates/html/subpages/basepage.html" %}
+<!--
+    Parameters:
+    
+    logout_url: string, URL for logging out
+    user: User object, representing the current user
+    enablereservations: bool, disables future reservations if false
+    enablespotspecification: bool, disables use of guest car if false
+-->
+
+{% block pageid %}main{% endblock %}
+{% block header %}
+        <h1>Welcome, {{ user.name }}!</h1>
+{% endblock %}
+{% block content %}
+        
+        <div class="message error">
+            <i class="icon-exclamation-sign"></i>
+            <h2>System not available yet!</h2>
+        </div>
+        
+        <div class="content-primary">
+            <div class="inset"><!--nativeDroid workaround-->
+                <h2>Please return later...</h2>
+            </div>
+		</div><!-- /content-primary -->
+
+{% endblock %}
+{% block footer %}
+        <div data-role="navbar">
+            <ul>
+                <li><a href="#options" data-icon="cogs">Options</a></li>
+                {% if enablereservations %}
+                <li><a href="#future" data-icon="calendar">Future</a></li>
+                {% endif %}
+                <li><a href="{{ logout_url }}" data-icon="signout">Logout</a></li>
+            </ul>
+        </div>
+{% endblock %}
