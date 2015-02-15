@@ -18,24 +18,34 @@ class MainHandler(webapp2.RequestHandler):
         editablecars = list(Car.all().filter("owner = ", user).filter("plate != ", GUEST_PLATE))
         usercars = editablecars
         enablereservations = Configuration.GetEnableReservations()
+        enablespotspecification = Configuration.GetEnableSpotSpecification()
         spots = list(Spot.all().filter("future = ", False))
         themename, subtheme, themecolor = Configuration.GetTheme()
 
-        main    = JINJA_ENV.get_template('templates/html/subpages/main.html')
-        options = JINJA_ENV.get_template('templates/html/subpages/options.html')
-        future  = JINJA_ENV.get_template('templates/html/subpages/future.html')
-        index   = JINJA_ENV.get_template('templates/html/index.html')
+        main        = JINJA_ENV.get_template('templates/html/subpages/main.html')
+        downtime    = JINJA_ENV.get_template('templates/html/subpages/downtime.html')
+        options     = JINJA_ENV.get_template('templates/html/subpages/options.html')
+        future      = JINJA_ENV.get_template('templates/html/subpages/future.html')
+        index       = JINJA_ENV.get_template('templates/html/index.html')
 
         mainpage_values = {
             "logout_url": logout_url,
             "user": user,
             "enablereservations": enablereservations,
+            "enablespotspecification": enablespotspecification,
             "freespots": len([spot for spot in spots if spot.free]),
             "totalspots": len(spots),
             "usercars": usercars,
             "guestcar": Car.GuestCar(),
             }
         mainpage = main.render(mainpage_values)
+
+        downtime_values = {
+            "logout_url": logout_url,
+            "user": user,
+            "enablereservations": enablereservations,
+            }
+        downtimepage = downtime.render(downtime_values)
 
         options_values = {
             "logout_url": logout_url,
@@ -59,12 +69,26 @@ class MainHandler(webapp2.RequestHandler):
             "themename": themename,
             "subtheme": subtheme,
             "themecolor": themecolor,
-            "mainpage": mainpage,
+            "mainpage": downtimepage if is_downtime() else mainpage,
             "optionspage": optionspage,
             "futurepage": futurepage,
             }
         
         self.response.out.write(index.render(index_values))
+
+class ScriptHandler(webapp2.RequestHandler):
+    def get(self):
+        enablespotspecification = Configuration.GetEnableSpotSpecification()
+        
+        script_tpl = JINJA_ENV.get_template('templates/js/main.js')
+
+        script_values = {
+            "enablespotspecification": enablespotspecification,
+            }
+        script = script_tpl.render(script_values)
+
+        self.response.headers["Content-Type"] = "text/javascript"
+        self.response.out.write(script)
 
 class SetCarHandler(webapp2.RequestHandler):
     def get(self):
@@ -126,7 +150,7 @@ class GetSpotsHandler(webapp2.RequestHandler):
                         jspot['name'] = "Guest"
                         jspot['label'] = "Reserved"
                         jspot['plate'] = GUEST_PLATE
-                        jspot['leavable'] = True
+                        jspot['leavable'] = Configuration.GetEnableSpotSpecification()
                     else:
                         if spot.car.owner == user:
                             user.inside = True
@@ -193,14 +217,34 @@ class GetFutureSpotsHandler(webapp2.RequestHandler):
         self.response.out.write(json.dumps(result))
         
 class TakeSpotHandler(webapp2.RequestHandler):
+    def _take_specific(self):
+        spot = Spot.get(db.Key.from_path("Spot", self.request.get('spotnumber')))
+        car = Car.get(db.Key.from_path("Car", self.request.get('plate').replace('-','')))
+        comments = make_name(users.get_current_user()) if car.prettyplate() == Car.GuestCar().prettyplate() else self.request.get('comments')
+        spot.Take(car, comments=comments)
+
+    def _take_inside(self):
+        spot = Spot.all().filter("free =", True).filter("future =", False).filter("outside =", False).get()
+        car = Car.get(db.Key.from_path("Car", self.request.get('plate').replace('-','')))
+        comments = self.request.get('comments')
+        spot.Take(car, comments=comments)
+
+    def _take_outside(self):
+        spot = Spot.all().filter("free =", True).filter("future =", False).filter("outside =", True).get()
+        car = Car.get(db.Key.from_path("Car", self.request.get('plate').replace('-','')))
+        comments = self.request.get('comments')
+        spot.Take(car, comments=comments)
+
     def get(self):
+        result = {}
         try:
-            result = {}
-            
-            spot = Spot.get(db.Key.from_path("Spot", self.request.get('spotnumber')))
-            car = Car.get(db.Key.from_path("Car", self.request.get('plate').replace('-','')))
-            comments = make_name(users.get_current_user()) if car.prettyplate() == Car.GuestCar().prettyplate() else self.request.get('comments')
-            spot.Take(car, comments=comments)
+            assert is_downtime() == False
+            if self.request.get('spottype') == 'inside':
+                self._take_inside()
+            elif self.request.get('spottype') == 'outside':
+                self._take_outside()
+            else:
+                self._take_specific()
             
             result['result'] = 'success'
         except Exception, e:
@@ -211,12 +255,23 @@ class TakeSpotHandler(webapp2.RequestHandler):
         self.response.out.write(json.dumps(result))
 
 class LeaveSpotHandler(webapp2.RequestHandler):
+    def _leave_specific(self):
+        spot = Spot.get(db.Key.from_path("Spot", self.request.get('spotnumber')))
+        spot.Leave()
+
+    def _leave_any(self):
+        for spot in Spot.all():
+            if spot.car and spot.car != Car.GuestCar():
+                spot.Leave()
+
     def get(self):
+        result = {}
         try:
-            result = {}
-            
-            spot = Spot.get(db.Key.from_path("Spot", self.request.get('spotnumber')))
-            spot.Leave()
+            assert is_downtime() == False
+            if self.request.get('spotnumber') != "":
+                self._leave_specific()
+            else:
+                self._leave_any()
             
             result['result'] = 'success'
         except Exception, e:

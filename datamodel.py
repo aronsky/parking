@@ -115,6 +115,7 @@ class Configuration(db.Model):
     subtheme = db.StringProperty(required=True, choices=set(["light", "dark"]), default="light")
     themecolor = db.StringProperty(required=True, choices=set(["blue", "green", "purple", "red", "yellow"]), default="blue")
     enablereservations = db.BooleanProperty(required=True, default=False)
+    enablespotspecification = db.BooleanProperty(required=True, default=False)
 
     @staticmethod
     def GetTheme():
@@ -145,14 +146,24 @@ class Configuration(db.Model):
             return False
 
     @staticmethod
+    def GetEnableSpotSpecification():
+        try:
+            cfg = list(Configuration.all().filter("owner = ", users.get_current_user()))[0]
+            return cfg.enablespotspecification
+        except:
+            return False
+
+    @staticmethod
     def MigrateConfigurationSchema():
         updated = []
         
         for cfg in Configuration.all():
             try:
                 cfg.enablereservations = cfg.enablereservations
+                cfg.enablespotspecification = cfg.enablespotspecification
             except:
                 cfg.enablereservations = False
+                cfg.enablespotspecification = False
             updated.append(cfg)
 
         if updated:

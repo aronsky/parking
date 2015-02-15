@@ -27,5 +27,6 @@ app = webapp2.WSGIApplication([
                               ('/leavespot', LeaveSpotHandler),
                               ('/reservespot', ReserveSpotHandler),
                               ('/settheme', SetThemeHandler),
+                              ('/script.js', ScriptHandler),
                               ('/', MainHandler)],
                               debug=True)

@@ -3,7 +3,7 @@
 -->
 
 <!-- Start of page -->
-<div data-role="page" id="{% block pageid %}main{% endblock %}">
+<div data-role="page" id="{% block pageid %}basepage{% endblock %}">
 
     <!-- header -->
 	<div data-role="header" data-position="fixed" data-tap-toggle="false" data-theme="b">
@@ -15,97 +15,12 @@
     <!-- content -->
 	<div data-theme="b" data-role="content">
         {% block content %}
-        {% if not freespots %}
-        <div class="message error">
-            <i class="icon-exclamation-sign"></i>
-            <h2>No free spots left!</h2>
-        </div>
-        {% elif freespots == 1 %}
-        <div class="message warning">
-            <i class="icon-warning-sign"></i>
-            <h2>Last spot!</h2>
-        </div>
-        {% else %}
-        <div class="inset">
-            <h2>Current spots ({{ freespots }} free)</h2>
-        </div>
-        {% endif %}
-
-        <progress value="{{ freespots }}" max="{{ totalspots }}"></progress>
-		
-        <div class="content-primary">
-            <div class="inset"><!--nativeDroid workaround-->
-                <ul data-role="listview" data-inset="true" id="spotlist">
-                    <!-- Content is dynamically generated... -->
-                </ul>
-            </div>
-		</div><!-- /content-primary -->
-        
-        <form>
-            <input id="takespotnumber" type="hidden"></input>
-            <input id="leavespotnumber" type="hidden"></input>
-        </form>
-        
-        <!-- Start of popup: #confirmleave -->
-        <div data-role="popup" id="confirmleave">
-
-            <div data-role="header" data-theme="b" style="padding-top: 5px;">
-                <h1>Leave</h1>
-            </div><!-- /header -->
-
-            <div data-role="content" data-theme="b">	
-                <h2>Are you sure you'd like to leave?</h2>
-                <div class="inset"><!--nativeDroid workaround-->
-                    <ul data-role="listview" data-inset="true">
-                        <li><a href="#main" onclick="leave_spot();">Leave</a></li>
-                        <li><a href="#main">Stay</a></li>
-                    </ul>
-                </div>
-            </div><!-- /content -->
-            
-            <div data-role="footer">
-                <h4>&nbsp;</h4>
-            </div><!-- /footer -->
-        </div><!-- /popup confirmleave -->
-
-        <!-- Start of popup: #confirmtake -->
-        <div data-role="popup" id="confirmtake">
-
-            <div data-role="header" data-theme="b" style="padding-top: 5px;">
-                <h1>Reservation</h1>
-            </div><!-- /header -->
-
-            <div data-role="content" data-theme="b">
-                <h2>What car are you driving?</h2>
-                <div class="inset"><!--nativeDroid workaround-->
-                    <ul data-role="listview" data-inset="true">
-                        {% for car in usercars %}
-                        <li><a href="#main" onclick="take_spot({{ car.plate }});">{{ car.make }} {{ car.model }} // {{ car.color.title() }}</a></li>
-                        {% endfor %}
-                    </ul>
-                </div>
-            </div><!-- /content -->
-            
-            <div data-role="footer">
-                <h4>&nbsp;</h4>
-            </div><!-- /footer -->
-        </div><!-- /popup confirmtake -->
-
         {% endblock %}
 	</div><!-- /content -->
 	
     <!-- footer -->
     <div data-position="fixed" data-tap-toggle="false" data-role="footer" data-theme='b'>
         {% block footer %}
-        <div data-role="navbar">
-            <ul>
-                <li><a href="#options" data-icon="cogs">Options</a></li>
-                {% if enablereservations %}
-                <li><a href="#future" data-icon="calendar">Future</a></li>
-                {% endif %}
-                <li><a href="{{ logout_url }}" data-icon="signout">Logout</a></li>
-            </ul>
-        </div>
         {% endblock %}
     </div><!-- /footer -->
 
