@@ -70,3 +70,8 @@ def is_downtime():
 
 def is_weekend():
     return datetime.datetime.now(Ist()).isoweekday() in (5, 6)
+
+def get_current_time():
+    current_time = datetime.datetime.now(Ist())
+    minimum_time = current_time.replace(hour=5, minute=45, second=0, microsecond=0)
+    return "Current time: %s; Minimum time: %s" % (current_time.strftime("%H:%M:%S %Z"), minimum_time.strftime("%H:%M:%S %Z"))

@@ -59,11 +59,15 @@ class MigrateConfigSchema(webapp2.RequestHandler):
         self.response.out.write(' OK!\r\n<br>')
         self.response.out.write('Upgraded %d configurations!' % updated)
 
+class TestTime(webapp2.RequestHandler):
+    def get(self):
+        self.response.out.write(shared.get_current_time())
 
 app = webapp2.WSGIApplication([
                                ('/tasks/clear', Clear),
                                ('/tasks/initspots', InitSpots),
                                ('/tasks/initcars', InitCars),
                                ('/tasks/migrateconfigschema', MigrateConfigSchema),
+                               ('/tasks/testtime', TestTime),
                                ],
                               debug=True)
