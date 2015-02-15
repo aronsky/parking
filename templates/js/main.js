@@ -212,7 +212,7 @@ function update_spots_generic() {
                     if (inside_full) {
                         listhtml += "<li><h3>Full</h3></li>";
                     } else {
-                        listhtml += '<li><a href="#confirmtake" data-rel="popup" data-transition="pop" onclick="$(\'input#takespottype\').val(\'inside\')">Empty</a></li>';
+                        listhtml += '<li><a href="#confirmtake" data-rel="popup" data-transition="pop" onclick="$(\'input#takespottype\').val(\'inside\')">Available</a></li>';
                     }
                     
                     // Outside spots
@@ -220,7 +220,7 @@ function update_spots_generic() {
                     if (outside_full) {
                         listhtml += "<li><h3>Full</h3></li>";
                     } else {
-                        listhtml += '<li><a href="#confirmtake" data-rel="popup" data-transition="pop" onclick="$(\'input#takespottype\').val(\'outside\')">Empty</a></li>';
+                        listhtml += '<li><a href="#confirmtake" data-rel="popup" data-transition="pop" onclick="$(\'input#takespottype\').val(\'outside\')">Available</a></li>';
                     }
                 }
 
