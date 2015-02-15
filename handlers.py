@@ -261,7 +261,7 @@ class LeaveSpotHandler(webapp2.RequestHandler):
 
     def _leave_any(self):
         for spot in Spot.all():
-            if spot.car and spot.car != Car.GuestCar():
+            if spot.car and spot.car.owner == users.get_current_user() and spot.car != Car.GuestCar():
                 spot.Leave()
 
     def get(self):

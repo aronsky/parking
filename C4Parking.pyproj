@@ -39,6 +39,7 @@
     <Content Include="templates\html\index.html" />
     <Content Include="templates\html\subpages\basepage.html" />
     <Content Include="templates\html\subpages\future.html" />
+    <Content Include="templates\html\subpages\downtime.html" />
     <Content Include="templates\html\subpages\main.html" />
     <Content Include="templates\html\subpages\options.html" />
     <Content Include="templates\js\main.js" />
