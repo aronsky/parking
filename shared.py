@@ -59,9 +59,14 @@ def make_name(user):
     return user.nickname().split('@')[0].replace('.', ' ').title()
     
 def is_downtime():
+    if is_weekend():
+        return True
     current_time = datetime.datetime.now(Ist())
     minimum_time = current_time.replace(hour=5, minute=45, second=0, microsecond=0)
     seed_base = current_time.strftime("Year: %Y Month: %m Day:%d")
     seed = int(hashlib.new("md5", seed_base).hexdigest(), 16) % 1024
     randomizer = random.Random(seed)
     return not (current_time - minimum_time).total_seconds() > 60 * randomizer.randint(0,60)
+
+def is_weekend():
+    return datetime.datetime.now(Ist()).isoweekday() in (5, 6)

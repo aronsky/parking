@@ -20,8 +20,9 @@ from datamodel import *
 
 class Clear(webapp2.RequestHandler):
     def get(self):
-        for spot in Spot.all().filter("future = ", False):
-            spot.Release()
+        if not shared.is_weekend():
+            for spot in Spot.all().filter("future = ", False):
+                spot.Release()
         
 class InitSpots(webapp2.RequestHandler):
     def get(self):
