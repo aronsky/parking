@@ -39,6 +39,10 @@ handlers:
   script: utils.app
   login: admin
 
+- url: /tasks/testtime
+  script: utils.app
+  login: required
+
 - url: .*
   script: main.app
   login: required
