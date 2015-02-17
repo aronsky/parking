@@ -150,6 +150,7 @@ class GetSpotsHandler(webapp2.RequestHandler):
                         jspot['name'] = "Guest"
                         jspot['label'] = "Reserved"
                         jspot['plate'] = GUEST_PLATE
+                        jspot['prettyplate'] = spot.car.prettyplate()
                         jspot['leavable'] = Configuration.GetEnableSpotSpecification()
                     else:
                         if spot.car.owner == user:
@@ -157,6 +158,7 @@ class GetSpotsHandler(webapp2.RequestHandler):
                             jspot['leavable'] = True
                         jspot['name'] = make_name(spot.car.owner)
                         jspot['plate'] = spot.car.plate
+                        jspot['prettyplate'] = spot.car.prettyplate()
                         jspot['label'] = spot.car.make + ' ' + spot.car.model
                 else:
                     jspot['parkable'] = True

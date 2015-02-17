@@ -123,10 +123,10 @@ function update_spots_specific()
                     }
                     else {
                         if (this.leavable) {
-                            item = '<li><a href="#confirmleave" data-rel="popup" data-transition="pop" onclick="$(\'input#leavespotnumber\').val('+this.number+')"><h3>' + this.name + '</h3><p><strong>' + this.label + '</strong></p><p class="ui-li-aside"><strong>' + this.comments + '</strong></p></a></li>';
+                            item = '<li><a href="#confirmleave" data-rel="popup" data-transition="pop" onclick="$(\'input#leavespotnumber\').val('+this.number+')"><h3>' + this.name + '</h3><p><strong>' + this.label + ' (' + this.prettyplate + ')</strong></p><p class="ui-li-aside"><strong>' + this.comments + '</strong></p></a></li>';
                         }
                         else {
-                            item = '<li><h3>' + this.name + '</h3><p><strong>' + this.label + '</strong></p><p class="ui-li-aside"><strong>' + this.comments + '</strong></p></li>';
+                            item = '<li><h3>' + this.name + '</h3><p><strong>' + this.label + ' (' + this.prettyplate + ')</strong></p><p class="ui-li-aside"><strong>' + this.comments + '</strong></p></li>';
                         }
                     }
                     
@@ -174,6 +174,7 @@ function update_spots_generic() {
                 var outside_full = true;
                 var inside_parked = false;
                 var outside_parked = false;
+                var car_label = "";
 
                 inside_spots_populator = function () {
                     if (!inside_parked && !outside_parked && this.free && this.parkable) {
@@ -182,6 +183,7 @@ function update_spots_generic() {
 
                     if (!this.free && this.leavable) {
                         inside_parked = true;
+                        car_label = this.label;
                     }
                 }
 
@@ -192,6 +194,7 @@ function update_spots_generic() {
 
                     if (!this.free && this.leavable) {
                         outside_parked = true;
+                        car_label = this.label;
                     }
                 }
 
@@ -200,11 +203,11 @@ function update_spots_generic() {
 
                 if (inside_parked) {
                     // Already parked inside!
-                    listhtml += '<li><h3>Already Parked Inside!</h3><h5 class="ui-li-heading-small">Lobby Phone#: <a href="tel:036071812">03-607-1812</a></h5></li>';
+                    listhtml += '<li><h3>Parking for your <strong>' + car_label + '</strong> reserved <strong>inside</strong>!</h3><h5 class="ui-li-heading-small">Lobby Phone#: <a href="tel:036071812">03-607-1812</a></h5></li>';
                     listhtml += '<li><a href="#confirmleave" data-rel="popup" data-transition="pop"><h3>Leave</h3></a></li>';
                 } else if (outside_parked) {
                     // Already parked outside!
-                    listhtml += '<li><h3>Already Parked Outside!</h3><h5 class="ui-li-heading-small">Moshe Salti Parking Lot</h5></li>';
+                    listhtml += '<li><h3>Parking for your <strong>' + car_label + '</strong> reserved <strong>outside</strong>!</h3><h5 class="ui-li-heading-small">Moshe Salti Parking Lot</h5></li>';
                     listhtml += '<li><a href="#confirmleave" data-rel="popup" data-transition="pop"><h3>Leave</h3></a></li>';
                 } else {
                     // Inside spots
