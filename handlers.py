@@ -246,6 +246,7 @@ class TakeSpotHandler(webapp2.RequestHandler):
             elif self.request.get('spottype') == 'outside':
                 self._take_outside()
             else:
+                assert Configuration.GetEnableSpotSpecification(), Exception("This incident will be reported.")
                 self._take_specific()
             
             result['result'] = 'success'
