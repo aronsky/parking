@@ -1,5 +1,5 @@
 cron:
 - description: clear parking spots
   url: /tasks/clear
-  schedule: every day 05:30
+  schedule: every day 04:30
   timezone: Asia/Jerusalem

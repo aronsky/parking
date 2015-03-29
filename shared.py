@@ -23,7 +23,7 @@ class Ist(datetime.tzinfo):
         return "IST-02IDT"
 
     def utcoffset(self, dt):
-        return datetime.timedelta(hours=2)
+        return datetime.timedelta(hours=3)
 
 
 ##############
