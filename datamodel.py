@@ -34,6 +34,12 @@ class Car(db.Model):
     def Delete(plate):
         car = Car.get(db.Key.from_path("Car", str(plate)))
         if car.owner == users.get_current_user():
+            # Delete all references to the car by leaving all the spots
+            for spot in list(Spot.all().filter("future = ", False)):
+                if spot.car == car:
+                    spot.Leave()
+                if spot.reserved and spot.reserved.car == car:
+                    spot.Reserve(False)
             car.delete()
     
     @staticmethod
