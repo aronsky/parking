@@ -33,7 +33,7 @@ handlers:
 
 - url: /tasks/initspots
   script: utils.app
-  login: admin
+  login: required
 
 - url: /tasks/migrateconfigschema
   script: utils.app
